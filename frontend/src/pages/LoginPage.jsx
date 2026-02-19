@@ -19,10 +19,10 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
 
       {/* Left decorative panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-white flex-col justify-between p-12 border-r border-gray-100">
+      <div className="hidden lg:flex lg:w-1/2 bg-white dark:bg-gray-800 flex-col justify-between p-12 border-r border-gray-100 dark:border-gray-700">
         {/* Logo */}
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-md">
@@ -30,32 +30,32 @@ function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <span className="text-lg font-bold text-gray-800 tracking-wide">FLOWER</span>
+          <span className="text-lg font-bold text-gray-800 dark:text-gray-200 tracking-wide">FLOWER</span>
         </div>
 
         {/* Note cards preview */}
         <div className="flex flex-col gap-4 flex-1 justify-center py-12">
-          <p className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-2">Your notes, organized</p>
+          <p className="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Your notes, organized</p>
 
           {/* Decorative note cards */}
           {[
-            { color: 'bg-yellow-100', title: 'Meeting recap', body: 'Discuss Q2 goals with the team and finalize the roadmap before end of month.' },
-            { color: 'bg-green-100', title: 'Ideas for the weekend', body: 'Visit the farmer\'s market, try the new ramen place on 5th, finish reading.' },
-            { color: 'bg-blue-100', title: 'Shopping list', body: 'Milk, eggs, sourdough bread, olive oil, cherry tomatoes, and fresh basil.' },
+            { color: 'bg-yellow-100 dark:bg-yellow-900', title: 'Meeting recap', body: 'Discuss Q2 goals with the team and finalize the roadmap before end of month.' },
+            { color: 'bg-green-100 dark:bg-green-900', title: 'Ideas for the weekend', body: 'Visit the farmer\'s market, try the new ramen place on 5th, finish reading.' },
+            { color: 'bg-blue-100 dark:bg-blue-900', title: 'Shopping list', body: 'Milk, eggs, sourdough bread, olive oil, cherry tomatoes, and fresh basil.' },
           ].map((card, i) => (
             <div
               key={i}
               className={`${card.color} rounded-2xl p-5 shadow-sm`}
               style={{ transform: `rotate(${i % 2 === 0 ? '-1deg' : '1.2deg'})`, transition: 'transform 0.2s' }}
             >
-              <p className="text-xs text-gray-400 mb-1">12 June, 2024</p>
-              <p className="font-semibold text-gray-800 mb-1">{card.title}</p>
-              <p className="text-sm text-gray-500 leading-relaxed">{card.body}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">12 June, 2024</p>
+              <p className="font-semibold text-gray-800 dark:text-gray-200 mb-1">{card.title}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{card.body}</p>
             </div>
           ))}
         </div>
 
-        <p className="text-xs text-gray-300">© 2024 Flower. All rights reserved.</p>
+        <p className="text-xs text-gray-300 dark:text-gray-600">© 2024 Flower. All rights reserved.</p>
       </div>
 
       {/* Right login panel */}
@@ -69,13 +69,13 @@ function LoginPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </div>
-            <span className="text-lg font-bold text-gray-800 tracking-wide">FLOWER</span>
+            <span className="text-lg font-bold text-gray-800 dark:text-gray-200 tracking-wide">FLOWER</span>
           </div>
 
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back</h1>
-            <p className="text-gray-400 text-sm">Sign in to your notes</p>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">Welcome back</h1>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">Sign in to your notes</p>
           </div>
 
           {/* Form */}
@@ -83,7 +83,7 @@ function LoginPage() {
 
             {/* Email */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-semibold text-gray-600" htmlFor="email">
+              <label className="text-sm font-semibold text-gray-600 dark:text-gray-300" htmlFor="email">
                 Email address
               </label>
               <div className="relative">
@@ -99,7 +99,7 @@ function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-300 placeholder-gray-300 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
                 />
               </div>
             </div>
@@ -107,7 +107,7 @@ function LoginPage() {
             {/* Password */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-gray-600" htmlFor="password">
+                <label className="text-sm font-semibold text-gray-600 dark:text-gray-300" htmlFor="password">
                   Password
                 </label>
                 <a href="#" className="text-xs text-green-500 hover:text-green-700 font-medium transition-colors">
@@ -127,12 +127,12 @@ function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-11 pr-12 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-300 placeholder-gray-300 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                 >
                   {showPassword ? (
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -170,13 +170,13 @@ function LoginPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-gray-100" />
-            <span className="text-xs text-gray-300 font-medium">OR</span>
-            <div className="flex-1 h-px bg-gray-100" />
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
+            <span className="text-xs text-gray-300 dark:text-gray-600 font-medium">OR</span>
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
           </div>
 
           {/* Sign up link */}
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-gray-400 dark:text-gray-500">
             Don't have an account?{' '}
             <Link
               to="/signup"
