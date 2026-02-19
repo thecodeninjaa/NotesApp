@@ -20,22 +20,22 @@ function EditNoteModal({ note, onSave, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-1/3">
-        <h2 className="text-2xl font-semibold mb-4">Edit Note</h2>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl w-1/3">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Edit Note</h2>
         <div className="mb-4">
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-gray-100 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+            className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 text-gray-900 dark:text-gray-200"
           />
         </div>
         <div className="mb-4">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full bg-gray-100 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+            className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 text-gray-900 dark:text-gray-200"
             rows="5"
           />
         </div>
