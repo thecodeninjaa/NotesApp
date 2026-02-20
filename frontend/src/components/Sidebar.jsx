@@ -13,7 +13,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
   return (
     // Apply dynamic width and padding based on collapsed state
     <div 
-      className={`bg-white dark:bg-gray-800 flex flex-col border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out relative ${isCollapsed ? 'w-20 p-3' : 'w-64 p-6'}`}
+    className={`bg-orange-50 dark:bg-gray-800 flex flex-col border-r border-orange-200 dark:border-gray-700 transition-all duration-300 ease-in-out relative ${isCollapsed ? 'w-20 p-3' : 'w-64 p-6'}`}
     >
       {/* Toggle Button - Positioned absolutely */}
       <button 
@@ -48,17 +48,17 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       <nav className="grow">
         <ul className="space-y-2">
           <li>
-            <Link to="/calendar" className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded ${isCollapsed ? 'justify-center' : ''}`}>
+            <Link to="/calendar" className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-orange-100 dark:hover:bg-gray-700 p-2 rounded ${isCollapsed ? 'justify-center' : ''}`}>
               <FiCalendar className={`${!isCollapsed ? 'mr-3' : ''}`} /> {!isCollapsed && 'Calendar'}
             </Link>
           </li>
           <li>
-            <Link to="/archive" className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded ${isCollapsed ? 'justify-center' : ''}`}>
+            <Link to="/archive" className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-orange-100 dark:hover:bg-gray-700 p-2 rounded ${isCollapsed ? 'justify-center' : ''}`}>
               <FiArchive className={`${!isCollapsed ? 'mr-3' : ''}`} /> {!isCollapsed && 'Archive'}
             </Link>
           </li>
           <li>
-            <Link to="/trash" className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded ${isCollapsed ? 'justify-center' : ''}`}>
+            <Link to="/trash" className={`flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-orange-100 dark:hover:bg-gray-700 p-2 rounded ${isCollapsed ? 'justify-center' : ''}`}>
               <FiTrash2 className={`${!isCollapsed ? 'mr-3' : ''}`} /> {!isCollapsed && 'Trash'}
             </Link>
           </li>
@@ -80,7 +80,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
 
       {/* Upgrade Section - Hide when collapsed */}
       {!isCollapsed && (
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+        <div className="mt-4 p-4 bg-orange-100 dark:bg-gray-700 rounded-lg text-center">
           <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">Want unlimited notes?</div>
           <div className="w-20 h-20 bg-gray-300 dark:bg-gray-600 mx-auto mb-3 rounded-full"></div>
           <button className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 transition text-sm">
