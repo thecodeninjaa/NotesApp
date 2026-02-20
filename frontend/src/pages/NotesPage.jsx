@@ -21,7 +21,7 @@ const NoteCard = ({ note, onDelete, onEdit }) => (
       </div>
     </div>
     <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">{note.title}</h4>
-    <p className="text-sm text-gray-700 dark:text-gray-300 flex-grow mb-3">{note.content}</p>
+    <p className="text-sm text-gray-700 dark:text-gray-300 grow mb-3">{note.content}</p>
     <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mt-auto">
       <FiClock className="mr-1" /> Sunday
     </div>
