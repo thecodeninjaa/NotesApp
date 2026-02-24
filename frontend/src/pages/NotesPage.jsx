@@ -7,11 +7,14 @@ import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
 
-const NoteCard = ({ note, onDelete, onEdit }) => (
-  <div className={`p-4 rounded-2xl shadow-sm bg-amber-50 dark:bg-yellow-900/30 min-h-[200px] flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer border border-amber-100 dark:border-yellow-800/20`}>
+const NoteCard = ({ note, onDelete, onEdit, isExpanded, onToggleExpand }) => (
+  <div 
+    onClick={() => onToggleExpand(note.id)}
+    className={`p-4 rounded-2xl shadow-sm bg-amber-50 dark:bg-yellow-900/30 ${isExpanded ? 'min-h-[300px]' : 'min-h-[200px]'} flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer border border-amber-100 dark:border-yellow-800/20`}
+  >
     <div className="flex justify-between items-start mb-2">
       <p className="text-xs text-neutral-500 dark:text-gray-400 mb-1">{new Date(note.created_at).toLocaleDateString()}</p>
-      <div>
+      <div onClick={(e) => e.stopPropagation()}>
         <button onClick={() => onEdit(note)} className="text-neutral-400 dark:text-gray-400 hover:text-neutral-600 dark:hover:text-white mr-2 transition-colors">
           <FiEdit />
         </button>
@@ -21,7 +24,9 @@ const NoteCard = ({ note, onDelete, onEdit }) => (
       </div>
     </div>
     <h4 className="font-semibold mb-2 text-neutral-700 dark:text-gray-200">{note.title}</h4>
-    <p className="text-sm text-neutral-600 dark:text-gray-300 grow mb-3 line-clamp-4">{note.content}</p>
+    <p className={`text-sm text-neutral-600 dark:text-gray-300 grow mb-3 ${isExpanded ? '' : 'line-clamp-4'}`}>
+      {note.content}
+    </p>
     <div className="flex items-center text-xs text-neutral-500 dark:text-gray-400 mt-auto">
       <FiClock className="mr-1" /> Sunday
     </div>
@@ -32,6 +37,7 @@ function NotesPage({ session }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingNote, setEditingNote] = useState(null);
+  const [expandedNoteId, setExpandedNoteId] = useState(null);
 
   useEffect(() => {
     fetchNotes();
@@ -138,7 +144,8 @@ function NotesPage({ session }) {
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             ) : (
               notes.map((note) => (
-                <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} onEdit={setEditingNote} />
+                <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} onEdit={setEditingNote} isExpanded={expandedNoteId === note.id}
+                onToggleExpand={(id) => setExpandedNoteId(expandedNoteId === id ? null : id)}/>
               ))
             )}
             <NewItemCard type="note" />
