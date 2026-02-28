@@ -2,24 +2,22 @@
 
 A modern, intuitive, and feature-rich note-taking application built with React, Vite, and Supabase.
 
-![Dashboard](frontend/dashboard.webp)
-
 ## Features
 
-*   **📝 Create, Edit, and Delete Notes:** Easily manage your notes with a simple and intuitive interface.
-*   **🗂️ Organize with Folders:** Group your notes into folders for better organization.
-*   **🎨 Light & Dark Mode:** Switch between light and dark themes for your comfort.
-*   **🔐 Authentication:** Secure your notes with email/password authentication.
-*   **🚀 Fast and Responsive:** Built with Vite for a lightning-fast development experience and a responsive design that works on all devices.
+- **📝 Create, Edit, and Delete Notes:** Easily manage your notes with a simple and intuitive interface.
+- **🗂️ Organize with Folders:** Group your notes into folders for better organization.
+- **🎨 Light & Dark Mode:** Switch between light and dark themes for your comfort.
+- **🔐 Authentication:** Secure your notes with email/password authentication.
+- **🚀 Fast and Responsive:** Built with Vite for a lightning-fast development experience and a responsive design that works on all devices.
 
 ## Tech Stack
 
-*   **Frontend:**
-    *   [React](https://reactjs.org/)
-    *   [Vite](https://vitejs.dev/)
-    *   [Tailwind CSS](https://tailwindcss.com/)
-*   **Backend:**
-    *   [Supabase](https://supabase.io/)
+- **Frontend:**
+  - [React](https://reactjs.org/)
+  - [Vite](https://vitejs.dev/)
+  - [Tailwind CSS](https://tailwindcss.com/)
+- **Backend:**
+  - [Supabase](https://supabase.io/)
 
 ## Getting Started
 
@@ -27,8 +25,8 @@ To get a local copy up and running, follow these simple steps.
 
 ### Prerequisites
 
-*   Node.js (v14 or later)
-*   npm
+- Node.js (v14 or later)
+- npm
 
 ### Installation
 
@@ -54,6 +52,7 @@ To get a local copy up and running, follow these simple steps.
     ```
 
 5.  **Run the development server:**
+
     ```sh
     npm run dev
     ```
