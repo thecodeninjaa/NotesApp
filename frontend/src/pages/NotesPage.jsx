@@ -7,10 +7,10 @@ import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
 
-const NoteCard = ({ note, onDelete, onEdit, isExpanded, onToggleExpand }) => (
+const NoteCard = ({ note, onDelete, onEdit }) => (
   <div 
-    onClick={() => onToggleExpand(note.id)}
-    className={`p-4 rounded-2xl shadow-sm bg-amber-50 dark:bg-yellow-900/30 ${isExpanded ? 'min-h-[300px]' : 'min-h-[200px]'} flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer border border-amber-100 dark:border-yellow-800/20`}
+    onClick={() => onEdit(note)}
+    className={`p-4 rounded-2xl shadow-sm bg-amber-50 dark:bg-yellow-900/30 min-h-[200px] flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer border border-amber-100 dark:border-yellow-800/20`}
   >
     <div className="flex justify-between items-start mb-2">
       <p className="text-xs text-neutral-500 dark:text-gray-400 mb-1">{new Date(note.created_at).toLocaleDateString()}</p>
@@ -24,7 +24,7 @@ const NoteCard = ({ note, onDelete, onEdit, isExpanded, onToggleExpand }) => (
       </div>
     </div>
     <h4 className="font-semibold mb-2 text-neutral-700 dark:text-gray-200">{note.title}</h4>
-    <p className={`text-sm text-neutral-600 dark:text-gray-300 grow mb-3 ${isExpanded ? '' : 'line-clamp-4'}`}>
+    <p className="text-sm text-neutral-600 dark:text-gray-300 grow mb-3 line-clamp-4">
       {note.content}
     </p>
     <div className="flex items-center text-xs text-neutral-500 dark:text-gray-400 mt-auto">
@@ -85,6 +85,24 @@ function NotesPage({ session }) {
     }
   };
 
+  const handleCreateNote = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data, error } = await supabase
+        .from('Notes')
+        .insert([
+          { title: 'New Note', content: '', user_id: user.id, created_at: new Date().toISOString() },
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error creating note:', error);
+      } else if (data) {
+        setNotes([data[0], ...notes]);
+      }
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
@@ -99,7 +117,7 @@ function NotesPage({ session }) {
             <input
               type="text"
               placeholder="Search"
-              className="bg-white/70 dark:bg-gray-700 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:bg-white dark:focus:bg-gray-600 text-gray-700 dark:text-gray-200 border border-orange-200 dark:border-gray-600"
+              className="bg-white/70 dark:bg-gray-700 rounded-lg py-2 pl-10 pr-4 outline-none focus:shadow-lg focus:shadow-orange-300/50 focus:bg-white dark:focus:bg-gray-600 text-gray-700 dark:text-gray-200 border border-orange-200 dark:border-gray-600"
             />
           </div>
           <div className="flex items-center space-x-2">
@@ -144,11 +162,15 @@ function NotesPage({ session }) {
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             ) : (
               notes.map((note) => (
-                <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} onEdit={setEditingNote} isExpanded={expandedNoteId === note.id}
-                onToggleExpand={(id) => setExpandedNoteId(expandedNoteId === id ? null : id)}/>
+                <NoteCard 
+                  key={note.id} 
+                  note={note} 
+                  onDelete={handleDeleteNote} 
+                  onEdit={setEditingNote}
+                />
               ))
             )}
-            <NewItemCard type="note" />
+            <NewItemCard type="note" onClick={handleCreateNote} />
           </div>
         </section>
       </div>
