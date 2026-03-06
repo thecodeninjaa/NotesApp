@@ -6,9 +6,10 @@ import { FiSearch, FiUser, FiMoreHorizontal, FiClock, FiLogOut, FiEdit } from 'r
 import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
+import CreateFolderModal from '../components/CreateFolderModal';
 
 const NoteCard = ({ note, onDelete, onEdit }) => (
-  <div 
+  <div
     onClick={() => onEdit(note)}
     className={`p-4 rounded-2xl shadow-sm bg-amber-50 dark:bg-yellow-900/30 min-h-[200px] flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer border border-amber-100 dark:border-yellow-800/20`}
   >
@@ -35,28 +36,39 @@ const NoteCard = ({ note, onDelete, onEdit }) => (
 
 function NotesPage({ session }) {
   const [notes, setNotes] = useState([]);
+  const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingNote, setEditingNote] = useState(null);
   const [expandedNoteId, setExpandedNoteId] = useState(null);
+  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
 
   useEffect(() => {
-    fetchNotes();
+    fetchData();
   }, []);
 
-  const fetchNotes = async () => {
+  const fetchData = async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      const { data, error } = await supabase
-        .from('Notes')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-      if (error) {
-        console.error('Error fetching notes:', error);
-      } else {
-        setNotes(data);
-      }
+      const [notesResponse, foldersResponse] = await Promise.all([
+        supabase
+          .from('Notes')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('Folders')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+      ]);
+
+      if (notesResponse.error) console.error('Error fetching notes:', notesResponse.error);
+      else setNotes(notesResponse.data || []);
+
+      if (foldersResponse.error) console.error('Error fetching folders:', foldersResponse.error);
+      else setFolders(foldersResponse.data || []);
     }
     setLoading(false);
   };
@@ -73,7 +85,7 @@ function NotesPage({ session }) {
   const handleUpdateNote = async (updatedNote) => {
     const { data, error } = await supabase
       .from('Notes')
-      .update({ title: updatedNote.title, content: updatedNote.content })
+      .update({ title: updatedNote.title, content: updatedNote.content, folder_id: updatedNote.folder_id })
       .eq('id', updatedNote.id)
       .select();
 
@@ -91,7 +103,7 @@ function NotesPage({ session }) {
       const { data, error } = await supabase
         .from('Notes')
         .insert([
-          { title: 'New Note', content: '', user_id: user.id, created_at: new Date().toISOString() },
+          { title: 'New Note', content: '', user_id: user.id, folder_id: selectedFolderId, created_at: new Date().toISOString() },
         ])
         .select();
 
@@ -99,6 +111,25 @@ function NotesPage({ session }) {
         console.error('Error creating note:', error);
       } else if (data) {
         setNotes([data[0], ...notes]);
+      }
+    }
+  };
+
+  const handleCreateFolder = async (name, color) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data, error } = await supabase
+        .from('Folders')
+        .insert([
+          { name, color, user_id: user.id, created_at: new Date().toISOString() },
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error creating folder:', error);
+      } else if (data) {
+        setFolders([data[0], ...folders]);
+        setIsCreateFolderModalOpen(false);
       }
     }
   };
@@ -129,7 +160,7 @@ function NotesPage({ session }) {
           </button>
         </div>
       </div>
-  
+
       <div className="w-full p-6 space-y-8">
         <section className="bg-white/80 dark:bg-gray-800/50 rounded-2xl p-6 border border-orange-200 dark:border-gray-700/50 shadow-sm">
           <div className="flex justify-between items-center mb-4">
@@ -141,17 +172,34 @@ function NotesPage({ session }) {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <FolderCard title="Movie Review" date="12/12/2021" color="bg-blue-100" />
-            <FolderCard title="Class Notes" date="12/12/2021" color="bg-pink-100" />
-            <FolderCard title="Book Lists" date="12/12/2021" color="bg-yellow-100" />
-            <NewItemCard type="folder" />
+            {loading ? (
+              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+            ) : (
+              folders.map((folder) => (
+                <div key={folder.id} onClick={() => setSelectedFolderId(folder.id)}>
+                  <FolderCard
+                    title={folder.name}
+                    date={new Date(folder.created_at).toLocaleDateString()}
+                    color={folder.color || 'bg-blue-100'}
+                  />
+                </div>
+              ))
+            )}
+            <NewItemCard type="folder" onClick={() => setIsCreateFolderModalOpen(true)} />
           </div>
         </section>
-  
+
         <section className="bg-white/80 dark:bg-gray-800/50 rounded-2xl p-6 border border-orange-200 dark:border-gray-700/50 shadow-sm">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-200">My Notes</h2>
+            <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-200">
+              {selectedFolderId ? `Notes in ${folders.find(f => f.id === selectedFolderId)?.name || 'Folder'}` : 'All Notes'}
+            </h2>
             <div className="text-sm text-gray-500 dark:text-gray-400 space-x-4">
+              {selectedFolderId && (
+                <button onClick={() => setSelectedFolderId(null)} className="hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-xs font-semibold mr-2">
+                  Clear Filter
+                </button>
+              )}
               <button className="hover:text-gray-700 dark:hover:text-white transition-colors">Todays</button>
               <button className="text-gray-700 dark:text-white font-medium border-b-2 border-orange-400 dark:border-blue-500 pb-1">This Week</button>
               <button className="hover:text-gray-700 dark:hover:text-white transition-colors">This Month</button>
@@ -161,28 +209,39 @@ function NotesPage({ session }) {
             {loading ? (
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             ) : (
-              notes.map((note) => (
-                <NoteCard 
-                  key={note.id} 
-                  note={note} 
-                  onDelete={handleDeleteNote} 
-                  onEdit={setEditingNote}
-                />
-              ))
+              notes
+                .filter(note => selectedFolderId ? note.folder_id === selectedFolderId : true)
+                .map((note) => (
+                  <NoteCard
+                    key={note.id}
+                    note={note}
+                    onDelete={handleDeleteNote}
+                    onEdit={setEditingNote}
+                  />
+                ))
             )}
             <NewItemCard type="note" onClick={handleCreateNote} />
           </div>
         </section>
       </div>
-  
+
       {editingNote && (
         <EditNoteModal
           note={editingNote}
+          folders={folders}
           onSave={handleUpdateNote}
           onClose={() => setEditingNote(null)}
         />
       )}
+
+      {isCreateFolderModalOpen && (
+        <CreateFolderModal
+          onSave={handleCreateFolder}
+          onClose={() => setIsCreateFolderModalOpen(false)}
+        />
+      )}
     </main>
-  )};
+  )
+};
 
 export default NotesPage;

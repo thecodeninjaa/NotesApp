@@ -30,7 +30,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       </div>
 
       {/* Add New Button - Show icon only when collapsed */}
-      <button className={`w-full flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 transition mb-6 ${isCollapsed ? 'px-2' : ''}`}>
+      <button className={`w-full flex items-center justify-center bg-orange-500 hover:bg-orange-600 dark:bg-gray-700 dark:hover:bg-gray-600 text-white py-2.5 px-4 rounded-xl shadow-sm transition-colors mb-6 ${isCollapsed ? 'px-2' : ''}`}>
         <FiPlus className={`${!isCollapsed ? 'mr-2' : ''}`} />
         {!isCollapsed && 'Add new'}
       </button>

@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
-function EditNoteModal({ note, onSave, onClose }) {
+function EditNoteModal({ note, folders = [], onSave, onClose }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [folderId, setFolderId] = useState('');
 
   useEffect(() => {
     if (note) {
       setTitle(note.title);
       setContent(note.content);
+      setFolderId(note.folder_id || '');
     }
   }, [note]);
 
   const handleSave = () => {
-    onSave({ ...note, title, content });
+    onSave({ ...note, title, content, folder_id: folderId || null });
   };
 
   if (!note) {
@@ -40,6 +42,21 @@ function EditNoteModal({ note, onSave, onClose }) {
             className="w-full bg-amber-50 dark:bg-gray-700 rounded-lg py-2 px-3 outline-none focus:shadow-lg focus:shadow-orange-300/50 text-gray-800 dark:text-gray-200 border-0 placeholder-gray-400 resize-none text-sm"
             rows="8"
           />
+        </div>
+        <div className="mb-5">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Folder
+          </label>
+          <select
+            value={folderId}
+            onChange={(e) => setFolderId(e.target.value)}
+            className="w-full bg-white dark:bg-gray-700 rounded-lg py-2 px-3 outline-none focus:shadow-lg focus:shadow-orange-300/50 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600 text-sm"
+          >
+            <option value="">No Folder</option>
+            {folders.map(folder => (
+              <option key={folder.id} value={folder.id}>{folder.name}</option>
+            ))}
+          </select>
         </div>
         <div className="flex justify-end gap-2">
           <button
