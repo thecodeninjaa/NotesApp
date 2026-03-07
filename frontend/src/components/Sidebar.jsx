@@ -48,7 +48,7 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
   return (
     // Apply dynamic width and padding based on collapsed state. Glassmorphic base.
     <div
-      className={`bg-orange-50 dark:bg-transparent flex flex-col transition-all duration-300 ease-in-out relative ${isCollapsed ? 'w-20 p-3' : 'w-64 p-6'}`}
+      className={`bg-transparent flex flex-col transition-all duration-300 ease-in-out relative ${isCollapsed ? 'w-20 p-3' : 'w-64 p-6'}`}
     >
       {/* Light Mode Border */}
       <div className="dark:hidden absolute right-0 top-0 bottom-0 w-px bg-orange-200 pointer-events-none" />

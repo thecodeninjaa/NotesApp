@@ -45,7 +45,7 @@ function App() {
       <Router>
         <div
           onMouseMove={handleMouseMove}
-          className="flex w-full h-screen bg-orange-50 dark:bg-gradient-to-br dark:from-gray-950 dark:via-black dark:to-gray-900 transition-all duration-300 ease-in-out"
+          className="flex w-full h-screen bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:via-black dark:to-gray-900 transition-all duration-300 ease-in-out"
         >
           {isLoggedIn && (
             <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} mousePos={mousePos} />

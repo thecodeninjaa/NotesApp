@@ -18,53 +18,79 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   }, []);
 
   return (
-    <div
-      ref={cardRef}
-      onClick={() => onEdit(note)}
-      className="relative w-full h-[220px] rounded-[2rem] border border-white/10 bg-[#0f0f0f]/80 backdrop-blur-xl p-6 overflow-hidden flex flex-col group cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
-    >
-      {/* Proximity Glow from mouse tracking */}
+    <div ref={cardRef} className="relative group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
+      {/* === LIGHT MODE: BEHIND-CARD GLOW (like floating above a light) === */}
+      {/* Wide soft haze behind the card */}
+      <div className="absolute -inset-x-2 -bottom-4 top-[30%] rounded-[2rem] bg-amber-400/60 blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500 dark:hidden pointer-events-none" />
+      {/* Intense bright bottom edge glow peeking out from under */}
+      <div className="absolute bottom-0 left-[5%] right-[5%] h-[6px] rounded-full bg-amber-400 blur-[4px] opacity-70 group-hover:opacity-90 transition-opacity duration-500 dark:hidden pointer-events-none" />
+
+      {/* === DARK MODE: Proximity Glow === */}
       {mousePos && rect && (
         <div
-          className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+          className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 hidden dark:block"
           style={{
             background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(234, 88, 12, 0.15), transparent 40%)`
           }}
         />
       )}
+      {/* === LIGHT MODE: Proximity Glow === */}
+      {mousePos && rect && (
+        <div
+          className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 block dark:hidden z-[1]"
+          style={{
+            background: `radial-gradient(600px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(245, 158, 11, 0.12), transparent 40%)`
+          }}
+        />
+      )}
 
-      {/* Heavy bottom inner glow haze (using an amber/orange glow for notes) */}
-      <div className="absolute -bottom-6 left-0 right-0 h-28 bg-gradient-to-t from-orange-600 to-transparent opacity-60 blur-2xl group-hover:opacity-90 transition-opacity duration-500 pointer-events-none" />
+      {/* === THE CARD (solid opaque surface) === */}
+      <div
+        onClick={() => onEdit(note)}
+        className="relative w-full h-[220px] rounded-[2rem] overflow-hidden flex flex-col
+          border border-gray-200/80 dark:border-white/10
+          bg-gradient-to-b from-white to-gray-50 dark:from-transparent dark:to-transparent
+          dark:bg-[#0f0f0f]/80
+          backdrop-blur-xl
+          shadow-[0_2px_8px_rgba(0,0,0,0.06)]
+          dark:shadow-none
+          p-6"
+      >
+        {/* Light Mode: Subtle top edge highlight */}
+        <div className="absolute top-0 left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-transparent via-white to-transparent dark:hidden pointer-events-none" />
 
-      {/* Intense bright bottom border line */}
-      <div className="absolute bottom-0 left-[0%] right-[0%] h-[3px] bg-orange-400 blur-[1px] opacity-80 group-hover:opacity-100 group-hover:shadow-[0_0_20px_var(--tw-shadow-color)] shadow-orange-400 transition-all duration-500 pointer-events-none" />
+        {/* Dark Mode: Bottom glow haze */}
+        <div className="absolute -bottom-6 left-0 right-0 h-28 bg-gradient-to-t from-orange-600 to-transparent opacity-60 blur-2xl group-hover:opacity-90 transition-opacity duration-500 pointer-events-none hidden dark:block" />
+        {/* Dark Mode: Bottom border line */}
+        <div className="absolute bottom-0 left-[0%] right-[0%] h-[3px] bg-orange-400 blur-[1px] opacity-80 group-hover:opacity-100 group-hover:shadow-[0_0_20px_var(--tw-shadow-color)] shadow-orange-400 transition-all duration-500 pointer-events-none hidden dark:block" />
 
-      <div className="relative z-10 flex flex-col h-full">
-        <div className="flex justify-between items-start mb-4">
-          <div className="relative w-12 h-12 rounded-2xl bg-black border border-orange-500/30 flex items-center justify-center shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(234,88,12,0.2)] overflow-hidden group/icon transition-all hover:shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_30px_rgba(234,88,12,0.4)]">
-            {/* Intense top edge light reflection */}
-            <div className="absolute top-0 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-orange-200 to-transparent opacity-100 drop-shadow-[0_0_5px_rgba(251,146,60,1)]" />
-            {/* Soft inner top gradient blur */}
-            <div className="absolute inset-0 bg-gradient-to-b from-orange-500/40 via-transparent to-transparent opacity-100 pointer-events-none blur-[2px]" />
-            <FiFileText className="relative z-10 text-orange-50 drop-shadow-[0_0_12px_rgba(251,146,60,1)]" size={22} />
+        <div className="relative z-10 flex flex-col h-full">
+          <div className="flex justify-between items-start mb-4">
+            <div className="relative w-12 h-12 rounded-2xl bg-amber-50 dark:bg-black border border-amber-200/60 dark:border-orange-500/30 flex items-center justify-center shadow-[0_2px_8px_rgba(245,180,60,0.15)] dark:shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(234,88,12,0.2)] overflow-hidden group/icon transition-all">
+              {/* Dark Mode: Intense top edge light reflection */}
+              <div className="absolute top-0 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-orange-200 to-transparent opacity-0 dark:opacity-100 drop-shadow-[0_0_5px_rgba(251,146,60,1)]" />
+              {/* Dark Mode: Soft inner top gradient blur */}
+              <div className="absolute inset-0 bg-gradient-to-b from-orange-500/40 via-transparent to-transparent opacity-0 dark:opacity-100 pointer-events-none blur-[2px]" />
+              <FiFileText className="relative z-10 text-amber-600 dark:text-orange-50 drop-shadow-none dark:drop-shadow-[0_0_12px_rgba(251,146,60,1)]" size={22} />
+            </div>
+            <div onClick={(e) => e.stopPropagation()} className="flex gap-1 -mr-2 -mt-2">
+              <button onClick={() => onEdit(note)} className="p-2 text-gray-400 hover:text-amber-600 dark:text-gray-500 dark:hover:text-white transition-colors">
+                <FiEdit size={18} />
+              </button>
+              <button onClick={() => onDelete(note.id)} className="p-2 text-gray-400 hover:text-amber-600 dark:text-gray-500 dark:hover:text-white transition-colors">
+                <FiMoreHorizontal size={18} />
+              </button>
+            </div>
           </div>
-          <div onClick={(e) => e.stopPropagation()} className="flex gap-1 -mr-2 -mt-2">
-            <button onClick={() => onEdit(note)} className="p-2 text-gray-500 hover:text-white transition-colors">
-              <FiEdit size={18} />
-            </button>
-            <button onClick={() => onDelete(note.id)} className="p-2 text-gray-500 hover:text-white transition-colors">
-              <FiMoreHorizontal size={18} />
-            </button>
-          </div>
-        </div>
 
-        <div className="mt-auto">
-          <h4 className="text-xl font-semibold mb-2 text-white tracking-tight line-clamp-1">{note.title}</h4>
-          <p className="text-sm text-gray-400 line-clamp-2 mb-4">
-            {note.content || "Empty note"}
-          </p>
-          <div className="text-white text-sm font-medium mt-auto flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-            Open note <span className="ml-1">→</span>
+          <div className="mt-auto relative z-10">
+            <h4 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white tracking-tight line-clamp-1">{note.title}</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">
+              {note.content || "Empty note"}
+            </p>
+            <div className="text-gray-600 dark:text-white text-sm font-medium mt-auto flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+              Open note <span className="ml-1">→</span>
+            </div>
           </div>
         </div>
       </div>
@@ -87,31 +113,39 @@ const SearchBar = ({ mousePos }) => {
       ref={containerRef}
       className="relative flex items-center w-full max-w-[320px] focus-within:max-w-[400px] transition-all duration-300 group/search"
     >
-      <div className="relative w-full flex items-center bg-black/40 backdrop-blur-md border border-white/10 rounded-full shadow-inner overflow-hidden focus-within:bg-white/5 focus-within:border-orange-500/50 focus-within:shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+      <div className="relative w-full flex items-center bg-white/60 dark:bg-black/40 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-full shadow-inner overflow-hidden focus-within:bg-white/90 dark:focus-within:bg-white/5 focus-within:border-orange-500/50 focus-within:shadow-[0_0_15px_rgba(249,115,22,0.1)] dark:focus-within:shadow-[0_0_15px_rgba(249,115,22,0.3)]">
         {/* Inner top light reflection */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none opacity-50 group-focus-within/search:opacity-100 transition-opacity duration-300" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-white/80 dark:via-white/30 to-transparent pointer-events-none opacity-50 group-focus-within/search:opacity-100 transition-opacity duration-300" />
 
         {/* Proximity Glow from mouse tracking */}
         {mousePos && rect && (
           <div
-            className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-60 group-hover/search:opacity-100"
+            className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-60 group-hover/search:opacity-100 hidden dark:block"
             style={{
               background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(234, 88, 12, 0.15), transparent 40%)`
             }}
           />
         )}
+        {mousePos && rect && (
+          <div
+            className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-60 group-hover/search:opacity-100 block dark:hidden"
+            style={{
+              background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(234, 88, 12, 0.05), transparent 40%)`
+            }}
+          />
+        )}
 
         {/* Heavy bottom inner glow haze */}
-        <div className="absolute bottom-0 left-0 right-0 h-[50%] bg-gradient-to-t from-orange-600 to-transparent opacity-40 blur-lg group-hover/search:opacity-60 transition-opacity duration-500 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-[50%] bg-gradient-to-t from-orange-600 to-transparent opacity-10 dark:opacity-40 blur-lg group-hover/search:opacity-30 dark:group-hover/search:opacity-60 transition-opacity duration-500 pointer-events-none" />
 
         {/* Intense bright bottom border line */}
-        <div className="absolute bottom-0 left-[0%] right-[0%] h-[2px] bg-orange-400 blur-[1px] opacity-80 group-focus-within/search:opacity-100 group-focus-within/search:shadow-[0_0_20px_var(--tw-shadow-color)] shadow-orange-400 transition-all duration-500 pointer-events-none" />
+        <div className="absolute bottom-0 left-[0%] right-[0%] h-[2px] bg-orange-400 blur-[1px] opacity-40 dark:opacity-80 group-focus-within/search:opacity-80 dark:group-focus-within/search:opacity-100 group-focus-within/search:shadow-[0_0_20px_var(--tw-shadow-color)] shadow-orange-400 transition-all duration-500 pointer-events-none" />
 
-        <FiSearch className="absolute left-4 text-gray-400 group-focus-within/search:text-orange-400 transition-colors z-10" />
+        <FiSearch className="absolute left-4 text-gray-400 dark:text-gray-400 group-focus-within/search:text-orange-500 dark:group-focus-within/search:text-orange-400 transition-colors z-10" />
         <input
           type="text"
           placeholder="Search"
-          className="w-full bg-transparent py-2.5 pl-11 pr-4 outline-none text-gray-200 placeholder-gray-500 relative z-10"
+          className="w-full bg-transparent py-2.5 pl-11 pr-4 outline-none text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 relative z-10"
         />
       </div>
     </div>
@@ -227,9 +261,9 @@ function NotesPage({ session, mousePos }) {
       className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent group/board relative"
     >
       {/* Top Bar Navigation */}
-      <div className="sticky top-0 z-50 px-6 w-full h-20 flex items-center justify-between bg-[#0f0f0f]/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+      <div className="sticky top-0 z-50 px-6 w-full h-20 flex items-center justify-between bg-white/70 dark:bg-[#0f0f0f]/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         {/* Left: Title */}
-        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-200 drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] tracking-wide">
+        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-orange-400 dark:from-orange-400 dark:to-orange-200 drop-shadow-sm dark:drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] tracking-wide">
           MY NOTES
         </h1>
 
@@ -240,13 +274,13 @@ function NotesPage({ session, mousePos }) {
 
         {/* Right: User & Logout */}
         <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-1.5 px-4 shadow-inner">
-            <FiUser className="text-gray-400" size={16} />
-            <span className="text-sm font-medium text-gray-300">{session?.user?.email}</span>
+          <div className="flex items-center space-x-3 bg-gray-100/60 dark:bg-black/40 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-full py-1.5 px-4 shadow-inner">
+            <FiUser className="text-gray-500 dark:text-gray-400" size={16} />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{session?.user?.email}</span>
           </div>
 
-          <button onClick={handleLogout} className="relative p-2.5 rounded-full bg-black/40 border border-white/10 text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 transition-all shadow-inner group/logout hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/logout:opacity-100 transition-opacity" />
+          <button onClick={handleLogout} className="relative p-2.5 rounded-full bg-gray-100/60 dark:bg-black/40 border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-300 dark:hover:border-rose-500/30 transition-all shadow-inner group/logout hover:shadow-[0_0_15px_rgba(244,63,94,0.1)] dark:hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-[1px] bg-gradient-to-r from-transparent via-white dark:via-white/30 to-transparent opacity-0 group-hover/logout:opacity-100 transition-opacity" />
             <FiLogOut size={20} className="relative z-10" />
           </button>
         </div>
