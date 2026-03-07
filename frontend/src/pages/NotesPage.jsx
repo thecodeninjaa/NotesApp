@@ -1,47 +1,81 @@
-// TODO: Add Dark Mode
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { FiSearch, FiUser, FiMoreHorizontal, FiClock, FiLogOut, FiEdit } from 'react-icons/fi';
+import { FiSearch, FiUser, FiMoreHorizontal, FiClock, FiLogOut, FiEdit, FiFileText } from 'react-icons/fi';
 import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
 import CreateFolderModal from '../components/CreateFolderModal';
 
-const NoteCard = ({ note, onDelete, onEdit }) => (
-  <div
-    onClick={() => onEdit(note)}
-    className={`p-4 rounded-2xl shadow-sm bg-amber-50 dark:bg-yellow-900/30 min-h-[200px] flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-2 hover:scale-[1.02] cursor-pointer border border-amber-100 dark:border-yellow-800/20`}
-  >
-    <div className="flex justify-between items-start mb-2">
-      <p className="text-xs text-neutral-500 dark:text-gray-400 mb-1">{new Date(note.created_at).toLocaleDateString()}</p>
-      <div onClick={(e) => e.stopPropagation()}>
-        <button onClick={() => onEdit(note)} className="text-neutral-400 dark:text-gray-400 hover:text-neutral-600 dark:hover:text-white mr-2 transition-colors">
-          <FiEdit />
-        </button>
-        <button onClick={() => onDelete(note.id)} className="text-neutral-400 dark:text-gray-400 hover:text-neutral-600 dark:hover:text-white transition-colors">
-          <FiMoreHorizontal />
-        </button>
+const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
+  const [rect, setRect] = useState(null);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (cardRef.current) {
+      setRect(cardRef.current.getBoundingClientRect());
+    }
+  }, []);
+
+  return (
+    <div
+      ref={cardRef}
+      onClick={() => onEdit(note)}
+      className="relative w-full h-[220px] rounded-[2rem] border border-white/10 bg-[#0f0f0f]/80 backdrop-blur-xl p-6 overflow-hidden flex flex-col group cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
+    >
+      {/* Proximity Glow from mouse tracking */}
+      {mousePos && rect && (
+        <div
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(234, 88, 12, 0.15), transparent 40%)`
+          }}
+        />
+      )}
+
+      {/* Heavy bottom inner glow haze (using an amber/orange glow for notes) */}
+      <div className="absolute -bottom-6 left-0 right-0 h-28 bg-gradient-to-t from-orange-600 to-transparent opacity-60 blur-2xl group-hover:opacity-90 transition-opacity duration-500 pointer-events-none" />
+
+      {/* Intense bright bottom border line */}
+      <div className="absolute bottom-0 left-[0%] right-[0%] h-[3px] bg-orange-400 blur-[1px] opacity-80 group-hover:opacity-100 group-hover:shadow-[0_0_20px_var(--tw-shadow-color)] shadow-orange-400 transition-all duration-500 pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex justify-between items-start mb-4">
+          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
+            <FiFileText className="text-gray-300" size={18} />
+          </div>
+          <div onClick={(e) => e.stopPropagation()} className="flex gap-1 -mr-2 -mt-2">
+            <button onClick={() => onEdit(note)} className="p-2 text-gray-500 hover:text-white transition-colors">
+              <FiEdit size={18} />
+            </button>
+            <button onClick={() => onDelete(note.id)} className="p-2 text-gray-500 hover:text-white transition-colors">
+              <FiMoreHorizontal size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-auto">
+          <h4 className="text-xl font-semibold mb-2 text-white tracking-tight line-clamp-1">{note.title}</h4>
+          <p className="text-sm text-gray-400 line-clamp-2 mb-4">
+            {note.content || "Empty note"}
+          </p>
+          <div className="text-white text-sm font-medium mt-auto flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+            Open note <span className="ml-1">→</span>
+          </div>
+        </div>
       </div>
     </div>
-    <h4 className="font-semibold mb-2 text-neutral-700 dark:text-gray-200">{note.title}</h4>
-    <p className="text-sm text-neutral-600 dark:text-gray-300 grow mb-3 line-clamp-4">
-      {note.content}
-    </p>
-    <div className="flex items-center text-xs text-neutral-500 dark:text-gray-400 mt-auto">
-      <FiClock className="mr-1" /> Sunday
-    </div>
-  </div>
-);
+  )
+};
 
 function NotesPage({ session }) {
   const [notes, setNotes] = useState([]);
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingNote, setEditingNote] = useState(null);
-  const [expandedNoteId, setExpandedNoteId] = useState(null);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState(null);
+  const [mousePos, setMousePos] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -138,8 +172,15 @@ function NotesPage({ session }) {
     await supabase.auth.signOut();
   };
 
+  const handleMouseMove = (e) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  };
+
   return (
-    <main className="flex-1 overflow-x-hidden overflow-y-auto bg-orange-50 dark:bg-gray-900">
+    <main
+      onMouseMove={handleMouseMove}
+      className="flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-gray-950 via-black to-gray-900 group/board"
+    >
       <div className="bg-orange-100/50 dark:bg-gray-800 shadow-sm p-4 w-full flex items-center justify-between border-b border-orange-200 dark:border-gray-700">
         <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-200">MY NOTES</h1>
         <div className="flex items-center space-x-4">
@@ -162,8 +203,8 @@ function NotesPage({ session }) {
       </div>
 
       <div className="w-full p-6 space-y-8">
-        <section className="bg-white/80 dark:bg-gray-800/50 rounded-2xl p-6 border border-orange-200 dark:border-gray-700/50 shadow-sm">
-          <div className="flex justify-between items-center mb-4">
+        <section className="bg-white/80 dark:bg-transparent rounded-2xl py-6 xl:px-6 border border-orange-200 dark:border-transparent lg:shadow-sm dark:shadow-none">
+          <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-200">Recent Folders</h2>
             <div className="text-sm text-gray-500 dark:text-gray-400 space-x-4">
               <button className="hover:text-gray-700 dark:hover:text-white transition-colors">Todays</button>
@@ -181,16 +222,17 @@ function NotesPage({ session }) {
                     title={folder.name}
                     date={new Date(folder.created_at).toLocaleDateString()}
                     color={folder.color || 'bg-blue-100'}
+                    mousePos={mousePos}
                   />
                 </div>
               ))
             )}
-            <NewItemCard type="folder" onClick={() => setIsCreateFolderModalOpen(true)} />
+            <NewItemCard type="folder" onClick={() => setIsCreateFolderModalOpen(true)} mousePos={mousePos} />
           </div>
         </section>
 
-        <section className="bg-white/80 dark:bg-gray-800/50 rounded-2xl p-6 border border-orange-200 dark:border-gray-700/50 shadow-sm">
-          <div className="flex justify-between items-center mb-4">
+        <section className="bg-white/80 dark:bg-transparent rounded-2xl py-6 xl:px-6 border border-orange-200 dark:border-transparent lg:shadow-sm dark:shadow-none">
+          <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-200">
               {selectedFolderId ? `Notes in ${folders.find(f => f.id === selectedFolderId)?.name || 'Folder'}` : 'All Notes'}
             </h2>
@@ -217,10 +259,11 @@ function NotesPage({ session }) {
                     note={note}
                     onDelete={handleDeleteNote}
                     onEdit={setEditingNote}
+                    mousePos={mousePos}
                   />
                 ))
             )}
-            <NewItemCard type="note" onClick={handleCreateNote} />
+            <NewItemCard type="note" onClick={handleCreateNote} mousePos={mousePos} />
           </div>
         </section>
       </div>
