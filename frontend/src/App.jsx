@@ -7,6 +7,7 @@ import {
 import { supabase } from './supabaseClient';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import LandingPage from './pages/LandingPage';
 import { ThemeProvider } from './context/ThemeContext';
 import NotesPage from './pages/NotesPage';
 import Sidebar from './components/Sidebar';
@@ -54,7 +55,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route path="/" element={isLoggedIn ? <NotesPage session={session} mousePos={mousePos} /> : <LoginPage />} />
+              <Route path="/" element={isLoggedIn ? <NotesPage session={session} mousePos={mousePos} /> : <LandingPage />} />
             </Routes>
           </div>
         </div>
