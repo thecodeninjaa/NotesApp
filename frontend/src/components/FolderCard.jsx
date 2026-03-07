@@ -127,36 +127,35 @@ const FolderCard = ({ title, date, color, mousePos }) => {
       <div className={`absolute -inset-x-2 -bottom-4 top-[30%] rounded-[2rem] ${lightBehindGlow} blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500 dark:hidden pointer-events-none`} />
       <div className={`absolute bottom-0 left-[5%] right-[5%] h-[6px] rounded-full ${lightBehindLine} blur-[4px] opacity-70 group-hover:opacity-90 transition-opacity duration-500 dark:hidden pointer-events-none`} />
 
-      {/* === DARK MODE: Proximity Glow === */}
-      {mousePos && rect && (
-        <div
-          className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100 hidden dark:block"
-          style={{
-            background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, ${glowColorStr}, transparent 40%)`
-          }}
-        />
-      )}
-      {/* === LIGHT MODE: Proximity Glow === */}
-      {mousePos && rect && (
-        <div
-          className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 block dark:hidden z-[1]"
-          style={{
-            background: `radial-gradient(600px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, ${glowColorStr.replace('0.15', '0.08')}, transparent 40%)`
-          }}
-        />
-      )}
 
       {/* === THE CARD (solid opaque surface) === */}
       <div
-        className={`relative w-full h-[220px] rounded-[2rem] overflow-hidden flex flex-col
+        className={`relative w-full h-[60px] rounded-xl overflow-hidden flex items-center
           border border-gray-200/80 dark:border-white/10
           bg-gradient-to-b from-white to-gray-50 dark:from-transparent dark:to-transparent
           dark:bg-[#0f0f0f]/80
           backdrop-blur-xl
           shadow-[0_2px_8px_rgba(0,0,0,0.06)]
           dark:shadow-none
-          p-6`}
+          px-4`}
       >
+        {/* Proximity Glow (inside card so it's visible) */}
+        {mousePos && rect && (
+          <div
+            className="absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100 hidden dark:block"
+            style={{
+              background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, ${glowColorStr}, transparent 40%)`
+            }}
+          />
+        )}
+        {mousePos && rect && (
+          <div
+            className="absolute inset-0 rounded-xl pointer-events-none transition-opacity duration-300 block dark:hidden z-[1]"
+            style={{
+              background: `radial-gradient(600px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, ${glowColorStr.replace('0.15', '0.08')}, transparent 40%)`
+            }}
+          />
+        )}
         {/* Light Mode: Subtle top edge highlight */}
         <div className="absolute top-0 left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-transparent via-white to-transparent dark:hidden pointer-events-none" />
 
@@ -166,28 +165,11 @@ const FolderCard = ({ title, date, color, mousePos }) => {
         <div className={`absolute bottom-0 left-[0%] right-[0%] h-[3px] ${borderColor} blur-[1px] opacity-80 group-hover:opacity-100 transition-all duration-500 pointer-events-none hidden dark:block`} />
 
         {/* Main card content */}
-        <div className="relative z-10 flex flex-col h-full">
-          <div className="flex justify-between items-start mb-6">
-            <div className={`relative w-12 h-12 rounded-2xl bg-gray-50 dark:bg-black border border-gray-200/60 dark:border-white/10 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_var(--tw-shadow-color)] dark:shadow-${borderColor}/20 overflow-hidden group/icon transition-all`}>
-              {/* Dark Mode: Intense top edge light reflection */}
-              <div className={`absolute top-0 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-0 dark:opacity-90 drop-shadow-[0_0_5px_var(--tw-shadow-color)] shadow-${borderColor}`} />
-              {/* Dark Mode: Soft inner top gradient blur */}
-              <div className={`absolute inset-0 bg-gradient-to-b ${innerGlow} via-transparent to-transparent opacity-0 dark:opacity-100 pointer-events-none blur-[2px]`} />
-              <FiFolder className={`relative z-10 ${lightIconColor} dark:text-white drop-shadow-none dark:drop-shadow-[0_0_12px_var(--tw-shadow-color)] dark:shadow-${borderColor}`} size={22} />
-            </div>
-            <button className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-white transition-colors p-2 -mr-2 -mt-2">
-              <FiMoreHorizontal size={20} />
-            </button>
+        <div className="relative z-10 flex items-center gap-3 w-full">
+          <div className={`relative w-9 h-9 shrink-0 rounded-lg bg-gray-50 dark:bg-black border border-gray-200/60 dark:border-white/10 flex items-center justify-center shadow-[0_2px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_8px_rgba(0,0,0,0.6)] overflow-hidden`}>
+            <FiFolder className={`relative z-10 ${lightIconColor} dark:text-white`} size={16} />
           </div>
-
-          {/* Text Area */}
-          <div className="mt-auto relative z-10">
-            <h4 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white tracking-tight">{title}</h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Folder created {date}</p>
-            <div className="text-gray-600 dark:text-white text-sm font-medium mt-4 flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-              Open folder <span className="ml-1">→</span>
-            </div>
-          </div>
+          <h4 className="text-sm font-semibold text-gray-800 dark:text-white tracking-tight truncate flex-1 min-w-0">{title}</h4>
         </div>
       </div>
     </div>

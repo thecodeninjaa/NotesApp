@@ -25,24 +25,6 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
       {/* Intense bright bottom edge glow peeking out from under */}
       <div className="absolute bottom-0 left-[5%] right-[5%] h-[6px] rounded-full bg-amber-400 blur-[4px] opacity-70 group-hover:opacity-90 transition-opacity duration-500 dark:hidden pointer-events-none" />
 
-      {/* === DARK MODE: Proximity Glow === */}
-      {mousePos && rect && (
-        <div
-          className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 hidden dark:block"
-          style={{
-            background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(234, 88, 12, 0.15), transparent 40%)`
-          }}
-        />
-      )}
-      {/* === LIGHT MODE: Proximity Glow === */}
-      {mousePos && rect && (
-        <div
-          className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 block dark:hidden z-[1]"
-          style={{
-            background: `radial-gradient(600px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(245, 158, 11, 0.12), transparent 40%)`
-          }}
-        />
-      )}
 
       {/* === THE CARD (solid opaque surface) === */}
       <div
@@ -56,6 +38,23 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
           dark:shadow-none
           p-6"
       >
+        {/* Proximity Glow (inside card so it's visible) */}
+        {mousePos && rect && (
+          <div
+            className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 hidden dark:block"
+            style={{
+              background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(234, 88, 12, 0.15), transparent 40%)`
+            }}
+          />
+        )}
+        {mousePos && rect && (
+          <div
+            className="absolute inset-0 rounded-[2rem] pointer-events-none transition-opacity duration-300 block dark:hidden z-[1]"
+            style={{
+              background: `radial-gradient(600px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(245, 158, 11, 0.12), transparent 40%)`
+            }}
+          />
+        )}
         {/* Light Mode: Subtle top edge highlight */}
         <div className="absolute top-0 left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-transparent via-white to-transparent dark:hidden pointer-events-none" />
 
