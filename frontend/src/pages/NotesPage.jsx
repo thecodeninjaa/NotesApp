@@ -68,14 +68,13 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   )
 };
 
-function NotesPage({ session }) {
+function NotesPage({ session, mousePos }) {
   const [notes, setNotes] = useState([]);
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingNote, setEditingNote] = useState(null);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState(null);
-  const [mousePos, setMousePos] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -172,14 +171,9 @@ function NotesPage({ session }) {
     await supabase.auth.signOut();
   };
 
-  const handleMouseMove = (e) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-  };
-
   return (
     <main
-      onMouseMove={handleMouseMove}
-      className="flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-gray-950 via-black to-gray-900 group/board"
+      className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent group/board"
     >
       <div className="bg-orange-100/50 dark:bg-gray-800 shadow-sm p-4 w-full flex items-center justify-between border-b border-orange-200 dark:border-gray-700">
         <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-200">MY NOTES</h1>
