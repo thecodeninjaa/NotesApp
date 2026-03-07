@@ -39,9 +39,19 @@ const FolderCard = ({ title, date, color, mousePos }) => {
     'bg-rose-100': 'bg-rose-400',
   };
 
+  const innerGlowMap = {
+    'bg-blue-100': 'from-blue-500/40',
+    'bg-pink-100': 'from-pink-500/40',
+    'bg-yellow-100': 'from-amber-400/40',
+    'bg-green-100': 'from-emerald-400/40',
+    'bg-purple-100': 'from-purple-500/40',
+    'bg-rose-100': 'from-rose-500/40',
+  };
+
   const glowColorStr = glowMap[color] || 'rgba(75, 85, 99, 0.15)';
   const bottomGlowColor = bottomGlowMap[color] || 'from-gray-600';
   const borderColor = borderGlowMap[color] || 'bg-gray-400';
+  const innerGlow = innerGlowMap[color] || 'from-gray-500/40';
 
   return (
     <div
@@ -66,10 +76,13 @@ const FolderCard = ({ title, date, color, mousePos }) => {
 
       {/* Main card content */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Top Icon Area */}
         <div className="flex justify-between items-start mb-6">
-          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-            <FiFolder className="text-gray-300" size={18} />
+          <div className={`relative w-12 h-12 rounded-2xl bg-black border border-white/10 flex items-center justify-center shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_var(--tw-shadow-color)] shadow-${borderColor}/20 overflow-hidden group/icon transition-all hover:shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_30px_var(--tw-shadow-color)] hover:shadow-${borderColor}/40`}>
+            {/* Intense top edge light reflection */}
+            <div className={`absolute top-0 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-90 drop-shadow-[0_0_5px_var(--tw-shadow-color)] shadow-${borderColor}`} />
+            {/* Soft inner top gradient blur */}
+            <div className={`absolute inset-0 bg-gradient-to-b ${innerGlow} via-transparent to-transparent opacity-100 pointer-events-none blur-[2px]`} />
+            <FiFolder className={`relative z-10 text-white drop-shadow-[0_0_12px_var(--tw-shadow-color)] shadow-${borderColor}`} size={22} />
           </div>
           <button className="text-gray-500 hover:text-white transition-colors p-2 -mr-2 -mt-2">
             <FiMoreHorizontal size={20} />

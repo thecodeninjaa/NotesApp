@@ -60,7 +60,7 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
       {/* Toggle Button - Positioned absolutely */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-3 top-9 z-20 p-1 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-white/20 rounded-full shadow-[0_0_15px_-3px_rgba(255,255,255,0.1)] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+        className="absolute -right-3 top-9 z-[60] p-1 bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-white/20 rounded-full shadow-[0_0_15px_-3px_rgba(255,255,255,0.1)] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {isCollapsed ? <FiChevronsRight size={18} /> : <FiChevronsLeft size={18} />}

@@ -41,8 +41,12 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
 
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex justify-between items-start mb-4">
-          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shadow-inner">
-            <FiFileText className="text-gray-300" size={18} />
+          <div className="relative w-12 h-12 rounded-2xl bg-black border border-orange-500/30 flex items-center justify-center shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(234,88,12,0.2)] overflow-hidden group/icon transition-all hover:shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_30px_rgba(234,88,12,0.4)]">
+            {/* Intense top edge light reflection */}
+            <div className="absolute top-0 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-orange-200 to-transparent opacity-100 drop-shadow-[0_0_5px_rgba(251,146,60,1)]" />
+            {/* Soft inner top gradient blur */}
+            <div className="absolute inset-0 bg-gradient-to-b from-orange-500/40 via-transparent to-transparent opacity-100 pointer-events-none blur-[2px]" />
+            <FiFileText className="relative z-10 text-orange-50 drop-shadow-[0_0_12px_rgba(251,146,60,1)]" size={22} />
           </div>
           <div onClick={(e) => e.stopPropagation()} className="flex gap-1 -mr-2 -mt-2">
             <button onClick={() => onEdit(note)} className="p-2 text-gray-500 hover:text-white transition-colors">
@@ -68,7 +72,54 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   )
 };
 
+const SearchBar = ({ mousePos }) => {
+  const [rect, setRect] = useState(null);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setRect(containerRef.current.getBoundingClientRect());
+    }
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative flex items-center w-full max-w-[320px] focus-within:max-w-[400px] transition-all duration-300 group/search"
+    >
+      <div className="relative w-full flex items-center bg-black/40 backdrop-blur-md border border-white/10 rounded-full shadow-inner overflow-hidden focus-within:bg-white/5 focus-within:border-orange-500/50 focus-within:shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+        {/* Inner top light reflection */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none opacity-50 group-focus-within/search:opacity-100 transition-opacity duration-300" />
+
+        {/* Proximity Glow from mouse tracking */}
+        {mousePos && rect && (
+          <div
+            className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-60 group-hover/search:opacity-100"
+            style={{
+              background: `radial-gradient(800px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(234, 88, 12, 0.15), transparent 40%)`
+            }}
+          />
+        )}
+
+        {/* Heavy bottom inner glow haze */}
+        <div className="absolute bottom-0 left-0 right-0 h-[50%] bg-gradient-to-t from-orange-600 to-transparent opacity-40 blur-lg group-hover/search:opacity-60 transition-opacity duration-500 pointer-events-none" />
+
+        {/* Intense bright bottom border line */}
+        <div className="absolute bottom-0 left-[0%] right-[0%] h-[2px] bg-orange-400 blur-[1px] opacity-80 group-focus-within/search:opacity-100 group-focus-within/search:shadow-[0_0_20px_var(--tw-shadow-color)] shadow-orange-400 transition-all duration-500 pointer-events-none" />
+
+        <FiSearch className="absolute left-4 text-gray-400 group-focus-within/search:text-orange-400 transition-colors z-10" />
+        <input
+          type="text"
+          placeholder="Search"
+          className="w-full bg-transparent py-2.5 pl-11 pr-4 outline-none text-gray-200 placeholder-gray-500 relative z-10"
+        />
+      </div>
+    </div>
+  );
+};
+
 function NotesPage({ session, mousePos }) {
+  // ... existing state ...
   const [notes, setNotes] = useState([]);
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -173,25 +224,30 @@ function NotesPage({ session, mousePos }) {
 
   return (
     <main
-      className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent group/board"
+      className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent group/board relative"
     >
-      <div className="bg-orange-100/50 dark:bg-gray-800 shadow-sm p-4 w-full flex items-center justify-between border-b border-orange-200 dark:border-gray-700">
-        <h1 className="text-2xl font-semibold text-gray-700 dark:text-gray-200">MY NOTES</h1>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-white/70 dark:bg-gray-700 rounded-lg py-2 pl-10 pr-4 outline-none focus:shadow-lg focus:shadow-orange-300/50 focus:bg-white dark:focus:bg-gray-600 text-gray-700 dark:text-gray-200 border border-orange-200 dark:border-gray-600"
-            />
+      {/* Top Bar Navigation */}
+      <div className="sticky top-0 z-50 px-6 w-full h-20 flex items-center justify-between bg-[#0f0f0f]/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+        {/* Left: Title */}
+        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-200 drop-shadow-[0_0_10px_rgba(249,115,22,0.8)] tracking-wide">
+          MY NOTES
+        </h1>
+
+        {/* Center: Search Bar */}
+        <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md flex justify-center z-20">
+          <SearchBar mousePos={mousePos} />
+        </div>
+
+        {/* Right: User & Logout */}
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-3 bg-black/40 backdrop-blur-md border border-white/10 rounded-full py-1.5 px-4 shadow-inner">
+            <FiUser className="text-gray-400" size={16} />
+            <span className="text-sm font-medium text-gray-300">{session?.user?.email}</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">{session?.user?.email}</span>
-            <FiUser className="text-gray-400 dark:text-gray-400" />
-          </div>
-          <button onClick={handleLogout} className="text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-            <FiLogOut size={24} />
+
+          <button onClick={handleLogout} className="relative p-2.5 rounded-full bg-black/40 border border-white/10 text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 transition-all shadow-inner group/logout hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover/logout:opacity-100 transition-opacity" />
+            <FiLogOut size={20} className="relative z-10" />
           </button>
         </div>
       </div>
@@ -200,10 +256,13 @@ function NotesPage({ session, mousePos }) {
         <section className="bg-white/80 dark:bg-transparent rounded-2xl py-6 xl:px-6 border border-orange-200 dark:border-transparent lg:shadow-sm dark:shadow-none">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-200">Recent Folders</h2>
-            <div className="text-sm text-gray-500 dark:text-gray-400 space-x-4">
-              <button className="hover:text-gray-700 dark:hover:text-white transition-colors">Todays</button>
-              <button className="text-gray-700 dark:text-white font-medium border-b-2 border-orange-400 dark:border-blue-500 pb-1">This Week</button>
-              <button className="hover:text-gray-700 dark:hover:text-white transition-colors">This Month</button>
+            <div className="flex bg-orange-100/50 dark:bg-black/40 backdrop-blur-md border border-orange-200 dark:border-white/10 rounded-full p-1 shadow-inner">
+              <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">Today</button>
+              <button className="relative px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold text-orange-600 dark:text-white bg-white dark:bg-white/10 border border-transparent dark:border-white/20 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.1)] overflow-hidden text-center">
+                <div className="hidden dark:block absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-4 bg-white/40 blur-[6px] rounded-full" />
+                <span className="relative z-10">This Week</span>
+              </button>
+              <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">This Month</button>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -230,15 +289,20 @@ function NotesPage({ session, mousePos }) {
             <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-200">
               {selectedFolderId ? `Notes in ${folders.find(f => f.id === selectedFolderId)?.name || 'Folder'}` : 'All Notes'}
             </h2>
-            <div className="text-sm text-gray-500 dark:text-gray-400 space-x-4">
+            <div className="flex items-center">
               {selectedFolderId && (
-                <button onClick={() => setSelectedFolderId(null)} className="hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full text-xs font-semibold mr-2">
+                <button onClick={() => setSelectedFolderId(null)} className="relative px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold text-gray-700 dark:text-white bg-red-100 dark:bg-red-500/20 border border-transparent dark:border-red-500/30 hover:bg-red-200 dark:hover:bg-red-500/40 transition-all text-center flex items-center justify-center mr-3 shadow-sm dark:shadow-[0_0_10px_rgba(239,68,68,0.2)]">
                   Clear Filter
                 </button>
               )}
-              <button className="hover:text-gray-700 dark:hover:text-white transition-colors">Todays</button>
-              <button className="text-gray-700 dark:text-white font-medium border-b-2 border-orange-400 dark:border-blue-500 pb-1">This Week</button>
-              <button className="hover:text-gray-700 dark:hover:text-white transition-colors">This Month</button>
+              <div className="flex bg-orange-100/50 dark:bg-black/40 backdrop-blur-md border border-orange-200 dark:border-white/10 rounded-full p-1 shadow-inner">
+                <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">Today</button>
+                <button className="relative px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold text-orange-600 dark:text-white bg-white dark:bg-white/10 border border-transparent dark:border-white/20 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.1)] overflow-hidden text-center">
+                  <div className="hidden dark:block absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-4 bg-white/40 blur-[6px] rounded-full" />
+                  <span className="relative z-10">This Week</span>
+                </button>
+                <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">This Month</button>
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
