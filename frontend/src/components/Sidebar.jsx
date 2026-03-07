@@ -143,7 +143,7 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
           as="button"
           onClick={toggleTheme}
           mousePos={mousePos}
-          className={`relative overflow-hidden group w-full flex items-center justify-center p-3 rounded-xl transition-all border border-transparent dark:hover:border-white/10 dark:bg-white/5 dark:text-gray-300 hover:text-white ${isCollapsed ? 'px-2' : ''}`}
+          className={`relative overflow-hidden group w-full flex items-center justify-center p-3 rounded-xl transition-all border border-transparent dark:hover:border-white/10 text-gray-600 dark:bg-white/5 dark:text-gray-300 dark:hover:text-white ${isCollapsed ? 'px-2' : ''}`}
         >
           {/* Theme Dynamic Glow */}
           <div className={`absolute -bottom-6 left-0 right-0 h-16 bg-gradient-to-t ${isDark ? 'from-amber-500' : 'from-blue-400'} to-transparent opacity-0 blur-xl group-hover:opacity-30 transition-opacity duration-500 pointer-events-none`} />
