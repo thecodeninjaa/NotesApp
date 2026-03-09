@@ -97,7 +97,7 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   )
 };
 
-const SearchBar = ({ mousePos }) => {
+const SearchBar = ({ mousePos, value, onChange }) => {
   const [rect, setRect] = useState(null);
   const containerRef = useRef(null);
 
@@ -143,8 +143,10 @@ const SearchBar = ({ mousePos }) => {
         <FiSearch className="absolute left-4 text-gray-400 dark:text-gray-400 group-focus-within/search:text-orange-500 dark:group-focus-within/search:text-orange-400 transition-colors z-10" />
         <input
           type="text"
-          placeholder="Search"
-          className="w-full bg-transparent py-2.5 pl-11 pr-4 outline-none text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 relative z-10"
+          placeholder="Search notes and folders..."
+          value={value}
+          onChange={onChange}
+          className="w-full bg-transparent py-2.5 pl-11 pr-4 outline-none text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 relative z-10 text-sm"
         />
       </div>
     </div>
@@ -159,6 +161,7 @@ function NotesPage({ session, mousePos }) {
   const [editingNote, setEditingNote] = useState(null);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -268,7 +271,7 @@ function NotesPage({ session, mousePos }) {
 
         {/* Center: Search Bar */}
         <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md flex justify-center z-20">
-          <SearchBar mousePos={mousePos} />
+          <SearchBar mousePos={mousePos} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         </div>
 
         {/* Right: User & Logout */}
@@ -302,16 +305,18 @@ function NotesPage({ session, mousePos }) {
             {loading ? (
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             ) : (
-              folders.map((folder) => (
-                <div key={folder.id} onClick={() => setSelectedFolderId(folder.id)}>
-                  <FolderCard
-                    title={folder.name}
-                    date={new Date(folder.created_at).toLocaleDateString()}
-                    color={folder.color || 'bg-blue-100'}
-                    mousePos={mousePos}
-                  />
-                </div>
-              ))
+              folders
+                .filter(folder => folder.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                .map((folder) => (
+                  <div key={folder.id} onClick={() => setSelectedFolderId(folder.id)}>
+                    <FolderCard
+                      title={folder.name}
+                      date={new Date(folder.created_at).toLocaleDateString()}
+                      color={folder.color || 'bg-blue-100'}
+                      mousePos={mousePos}
+                    />
+                  </div>
+                ))
             )}
             <NewItemCard type="folder" onClick={() => setIsCreateFolderModalOpen(true)} mousePos={mousePos} />
           </div>
@@ -344,6 +349,7 @@ function NotesPage({ session, mousePos }) {
             ) : (
               notes
                 .filter(note => selectedFolderId ? note.folder_id === selectedFolderId : true)
+                .filter(note => note.title.toLowerCase().includes(searchQuery.toLowerCase()))
                 .map((note) => (
                   <NoteCard
                     key={note.id}
