@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FiFolder, FiMoreHorizontal } from 'react-icons/fi';
+import { FiFolder } from 'react-icons/fi';
 
 const FolderCard = ({ title, date, color, mousePos }) => {
   const [rect, setRect] = useState(null);

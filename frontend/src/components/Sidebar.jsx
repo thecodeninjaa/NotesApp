@@ -67,8 +67,8 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
       </button>
 
       {/* Logo */}
-      <div className={`text-2xl font-bold mb-6 transition-all drop-shadow-[0_0_8px_rgba(59,130,246,0.5)] text-blue-600 dark:text-blue-400 ${isCollapsed ? 'text-center text-xl' : ''}`}>
-        {isCollapsed ? 'M' : 'MINO'}
+      <div className={`text-2xl font-bold mb-6 transition-all text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-400 dark:from-amber-400 dark:to-orange-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] ${isCollapsed ? 'text-center text-xl' : ''}`}>
+        {isCollapsed ? 'N' : 'NoteFlow'}
       </div>
 
       {/* Add New Button - Vibrant Orange Glow */}
