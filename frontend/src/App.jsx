@@ -3,11 +3,14 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Navigate,
 } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import LandingPage from './pages/LandingPage';
+import ComingSoonPage from './pages/ComingSoonPage';
+import NotFoundPage from './pages/NotFoundPage';
 import { ThemeProvider } from './context/ThemeContext';
 import NotesPage from './pages/NotesPage';
 import Sidebar from './components/Sidebar';
@@ -53,9 +56,13 @@ function App() {
           )}
           <div className="flex-1 flex flex-col overflow-hidden w-full">
             <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/login" element={isLoggedIn ? <Navigate to="/" replace /> : <LoginPage />} />
+              <Route path="/signup" element={isLoggedIn ? <Navigate to="/" replace /> : <SignupPage />} />
               <Route path="/" element={isLoggedIn ? <NotesPage session={session} mousePos={mousePos} /> : <LandingPage />} />
+              <Route path="/calendar" element={isLoggedIn ? <ComingSoonPage title="Calendar" /> : <Navigate to="/login" replace />} />
+              <Route path="/archive" element={isLoggedIn ? <ComingSoonPage title="Archive" /> : <Navigate to="/login" replace />} />
+              <Route path="/trash" element={isLoggedIn ? <ComingSoonPage title="Trash" /> : <Navigate to="/login" replace />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </div>
         </div>
