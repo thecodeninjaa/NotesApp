@@ -19,6 +19,17 @@ function useInView(options = {}) {
 // ─── Feature Card ───
 function FeatureCard({ icon: Icon, title, description, color, index }) {
     const [ref, isInView] = useInView();
+    const [mousePos, setMousePos] = useState(null);
+    const [rect, setRect] = useState(null);
+    const cardRef = useRef(null);
+
+    const handleMouseMove = (e) => {
+        if (cardRef.current) {
+            setRect(cardRef.current.getBoundingClientRect());
+            setMousePos({ x: e.clientX, y: e.clientY });
+        }
+    };
+
     const glowColors = {
         amber: 'from-amber-500',
         blue: 'from-blue-500',
@@ -26,6 +37,14 @@ function FeatureCard({ icon: Icon, title, description, color, index }) {
         green: 'from-emerald-500',
         rose: 'from-rose-500',
         cyan: 'from-cyan-500',
+    };
+    const proximityColors = {
+        amber: 'rgba(245, 158, 11, 0.1)',
+        blue: 'rgba(59, 130, 246, 0.1)',
+        purple: 'rgba(168, 85, 247, 0.1)',
+        green: 'rgba(16, 185, 129, 0.1)',
+        rose: 'rgba(244, 63, 94, 0.1)',
+        cyan: 'rgba(6, 182, 212, 0.1)',
     };
     const iconColors = {
         amber: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
@@ -37,19 +56,30 @@ function FeatureCard({ icon: Icon, title, description, color, index }) {
     };
     return (
         <div
-            ref={ref}
-            className={`relative group rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 overflow-hidden transition-all duration-700 hover:border-white/20 hover:bg-white/[0.06] ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            ref={(el) => { ref.current = el; cardRef.current = el; }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setMousePos(null)}
+            className={`relative group rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-6 overflow-hidden transition-all duration-500 hover:border-white/20 hover:bg-white/[0.06] ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
             style={{ transitionDelay: `${index * 100}ms` }}
         >
+            {/* Proximity glow */}
+            {mousePos && rect && (
+                <div
+                    className="absolute inset-0 rounded-2xl pointer-events-none z-10"
+                    style={{
+                        background: `radial-gradient(400px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, ${proximityColors[color]}, transparent 50%)`
+                    }}
+                />
+            )}
             {/* Bottom glow */}
             <div className={`absolute -bottom-4 left-0 right-0 h-20 bg-gradient-to-t ${glowColors[color]} to-transparent opacity-0 blur-2xl group-hover:opacity-30 transition-opacity duration-500 pointer-events-none`} />
             <div className={`absolute bottom-0 left-[10%] right-[10%] h-[2px] bg-gradient-to-r from-transparent via-${color === 'amber' ? 'amber' : color === 'blue' ? 'blue' : color === 'purple' ? 'purple' : color === 'green' ? 'emerald' : color === 'rose' ? 'rose' : 'cyan'}-400 to-transparent opacity-0 group-hover:opacity-80 transition-opacity duration-500 pointer-events-none`} />
 
-            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center mb-4 ${iconColors[color]}`}>
+            <div className={`relative z-10 w-12 h-12 rounded-xl border flex items-center justify-center mb-4 ${iconColors[color]}`}>
                 <Icon size={22} />
             </div>
-            <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+            <h3 className="relative z-10 text-white font-semibold text-lg mb-2">{title}</h3>
+            <p className="relative z-10 text-gray-400 text-sm leading-relaxed">{description}</p>
         </div>
     );
 }
@@ -58,20 +88,42 @@ function FeatureCard({ icon: Icon, title, description, color, index }) {
 function FAQItem({ question, answer, index }) {
     const [isOpen, setIsOpen] = useState(false);
     const [ref, isInView] = useInView();
+    const [mousePos, setMousePos] = useState(null);
+    const [rect, setRect] = useState(null);
+    const cardRef = useRef(null);
+
+    const handleMouseMove = (e) => {
+        if (cardRef.current) {
+            setRect(cardRef.current.getBoundingClientRect());
+            setMousePos({ x: e.clientX, y: e.clientY });
+        }
+    };
+
     return (
         <div
-            ref={ref}
-            className={`border border-white/10 rounded-xl overflow-hidden transition-all duration-500 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'} ${isOpen ? 'bg-white/[0.05]' : 'bg-white/[0.02] hover:bg-white/[0.04]'}`}
+            ref={(el) => { ref.current = el; cardRef.current = el; }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setMousePos(null)}
+            className={`relative border border-white/10 rounded-xl overflow-hidden transition-all duration-500 hover:border-white/20 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'} ${isOpen ? 'bg-white/[0.05]' : 'bg-white/[0.02] hover:bg-white/[0.04]'}`}
             style={{ transitionDelay: `${index * 80}ms` }}
         >
+            {/* Proximity glow */}
+            {mousePos && rect && (
+                <div
+                    className="absolute inset-0 rounded-xl pointer-events-none z-10"
+                    style={{
+                        background: `radial-gradient(400px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(245, 158, 11, 0.08), transparent 50%)`
+                    }}
+                />
+            )}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-5 text-left"
+                className="relative z-10 w-full flex items-center justify-between p-5 text-left"
             >
                 <span className="text-white font-medium pr-4">{question}</span>
                 <FiChevronDown className={`text-amber-400 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} size={20} />
             </button>
-            <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-40 pb-5 px-5' : 'max-h-0'}`}>
+            <div className={`relative z-10 overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-40 pb-5 px-5' : 'max-h-0'}`}>
                 <p className="text-gray-400 text-sm leading-relaxed">{answer}</p>
             </div>
         </div>
@@ -81,12 +133,34 @@ function FAQItem({ question, answer, index }) {
 // ─── Pricing Card ───
 function PricingCard({ name, price, features, highlighted, index }) {
     const [ref, isInView] = useInView();
+    const [mousePos, setMousePos] = useState(null);
+    const [rect, setRect] = useState(null);
+    const cardRef = useRef(null);
+
+    const handleMouseMove = (e) => {
+        if (cardRef.current) {
+            setRect(cardRef.current.getBoundingClientRect());
+            setMousePos({ x: e.clientX, y: e.clientY });
+        }
+    };
+
     return (
         <div
-            ref={ref}
-            className={`relative group rounded-2xl border p-6 flex flex-col transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${highlighted ? 'border-amber-500/40 bg-white/[0.06] scale-[1.02]' : 'border-white/10 bg-white/[0.03]'}`}
+            ref={(el) => { ref.current = el; cardRef.current = el; }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setMousePos(null)}
+            className={`relative group rounded-2xl border p-6 flex flex-col overflow-hidden transition-all duration-500 hover:border-white/20 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${highlighted ? 'border-amber-500/40 bg-white/[0.06] scale-[1.02]' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06]'}`}
             style={{ transitionDelay: `${index * 120}ms` }}
         >
+            {/* Proximity glow */}
+            {mousePos && rect && (
+                <div
+                    className="absolute inset-0 rounded-2xl pointer-events-none z-10"
+                    style={{
+                        background: `radial-gradient(400px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, ${highlighted ? 'rgba(245, 158, 11, 0.1)' : 'rgba(255, 255, 255, 0.05)'}, transparent 50%)`
+                    }}
+                />
+            )}
             {highlighted && (
                 <>
                     <div className="absolute -bottom-6 left-0 right-0 h-24 bg-gradient-to-t from-amber-500 to-transparent opacity-20 blur-2xl pointer-events-none" />
@@ -94,12 +168,12 @@ function PricingCard({ name, price, features, highlighted, index }) {
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full">Popular</span>
                 </>
             )}
-            <h3 className="text-white font-semibold text-lg mb-1">{name}</h3>
-            <div className="mb-4">
+            <h3 className="relative z-10 text-white font-semibold text-lg mb-1">{name}</h3>
+            <div className="relative z-10 mb-4">
                 <span className="text-3xl font-bold text-white">{price}</span>
                 {price !== 'Free' && <span className="text-gray-500 text-sm">/month</span>}
             </div>
-            <ul className="flex-1 space-y-3 mb-6">
+            <ul className="relative z-10 flex-1 space-y-3 mb-6">
                 {features.map((f, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
                         <FiCheck className={`mt-0.5 shrink-0 ${highlighted ? 'text-amber-400' : 'text-gray-600'}`} size={16} />
@@ -109,10 +183,84 @@ function PricingCard({ name, price, features, highlighted, index }) {
             </ul>
             <Link
                 to="/signup"
-                className={`w-full text-center py-2.5 rounded-xl font-semibold text-sm transition-all ${highlighted ? 'bg-amber-500 text-black hover:bg-amber-400 shadow-[0_0_20px_-5px_rgba(245,158,11,0.4)]' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'}`}
+                className={`relative z-10 w-full text-center py-2.5 rounded-xl font-semibold text-sm transition-all ${highlighted ? 'bg-amber-500 text-black hover:bg-amber-400 shadow-[0_0_20px_-5px_rgba(245,158,11,0.4)]' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'}`}
             >
                 Get Started
             </Link>
+        </div>
+    );
+}
+
+// ─── Step Card (How It Works) ───
+function StepCard({ num, title, desc, index }) {
+    const [ref, isInView] = useInView();
+    const [mousePos, setMousePos] = useState(null);
+    const [rect, setRect] = useState(null);
+    const cardRef = useRef(null);
+
+    const handleMouseMove = (e) => {
+        if (cardRef.current) {
+            setRect(cardRef.current.getBoundingClientRect());
+            setMousePos({ x: e.clientX, y: e.clientY });
+        }
+    };
+
+    return (
+        <div
+            ref={(el) => { ref.current = el; cardRef.current = el; }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setMousePos(null)}
+            className={`relative flex items-start gap-6 p-6 rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden transition-all duration-500 hover:border-white/20 hover:bg-white/[0.06] ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}
+            style={{ transitionDelay: `${index * 150}ms` }}
+        >
+            {mousePos && rect && (
+                <div
+                    className="absolute inset-0 rounded-2xl pointer-events-none z-10"
+                    style={{
+                        background: `radial-gradient(400px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, rgba(245, 158, 11, 0.08), transparent 50%)`
+                    }}
+                />
+            )}
+            <div className="relative z-10 w-12 h-12 shrink-0 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-sm">
+                {num}
+            </div>
+            <div className="relative z-10">
+                <h3 className="text-white font-semibold text-lg mb-1">{title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+            </div>
+        </div>
+    );
+}
+
+// ─── Mockup Note Card (with per-card proximity glow) ───
+function MockupNoteCard({ title, content, color, glowColor, mousePos }) {
+    const cardRef = useRef(null);
+    const [rect, setRect] = useState(null);
+
+    useEffect(() => {
+        if (cardRef.current) setRect(cardRef.current.getBoundingClientRect());
+    }, []);
+
+    // Update rect on mouse move for accuracy
+    const handleMouseEnter = () => {
+        if (cardRef.current) setRect(cardRef.current.getBoundingClientRect());
+    };
+
+    return (
+        <div ref={cardRef} onMouseEnter={handleMouseEnter} className="relative rounded-xl border border-white/10 bg-[#0f0f0f] p-4 overflow-hidden group hover:border-white/20 hover:bg-[#161616] transition-all duration-300">
+            {mousePos && rect && (
+                <div
+                    className="absolute inset-0 rounded-xl pointer-events-none z-10"
+                    style={{
+                        background: `radial-gradient(200px circle at ${mousePos.x - rect.left}px ${mousePos.y - rect.top}px, ${glowColor}, transparent 50%)`
+                    }}
+                />
+            )}
+            <div className={`absolute -bottom-3 left-0 right-0 h-12 bg-gradient-to-t ${color} to-transparent opacity-40 group-hover:opacity-70 blur-xl transition-opacity duration-300 pointer-events-none`} />
+            <div className="relative z-10">
+                <h4 className="text-xs font-semibold text-white mb-1 truncate">{title}</h4>
+                <p className="text-[10px] text-gray-500 truncate">{content}</p>
+            </div>
         </div>
     );
 }
@@ -122,6 +270,17 @@ function PricingCard({ name, price, features, highlighted, index }) {
 // ═══════════════════════════════════════════
 export default function LandingPage() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mousePos, setMousePos] = useState(null);
+    const [mockupRect, setMockupRect] = useState(null);
+    const mockupRef = useRef(null);
+
+    const handleMockupMouseMove = (e) => {
+        if (mockupRef.current) {
+            const rect = mockupRef.current.getBoundingClientRect();
+            setMousePos({ x: e.clientX, y: e.clientY });
+            setMockupRect(rect);
+        }
+    };
 
     const features = [
         { icon: FiFileText, title: 'Rich Text Notes', description: 'Create, edit, and organize your thoughts with a powerful note editor. Your ideas, captured beautifully.', color: 'amber' },
@@ -236,7 +395,7 @@ export default function LandingPage() {
                 </div>
 
                 {/* App Preview Mockup */}
-                <div className="max-w-5xl mx-auto mt-16 relative">
+                <div className="max-w-5xl mx-auto mt-16 relative" ref={mockupRef} onMouseMove={handleMockupMouseMove} onMouseLeave={() => setMousePos(null)}>
                     <div className="absolute -inset-4 bg-gradient-to-b from-amber-500/10 via-transparent to-transparent rounded-3xl blur-2xl pointer-events-none" />
                     <div className="relative rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden shadow-2xl">
                         {/* Title bar */}
@@ -274,21 +433,16 @@ export default function LandingPage() {
                                 </div>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                     {[
-                                        { title: 'Project Ideas', color: 'from-amber-600', content: 'Brainstorming session notes...' },
-                                        { title: 'Meeting Notes', color: 'from-blue-600', content: 'Q1 review action items...' },
-                                        { title: 'Reading List', color: 'from-purple-600', content: 'Books to read this month...' },
-                                        { title: 'Travel Plans', color: 'from-emerald-600', content: 'Weekend trip itinerary...' },
-                                        { title: 'Recipes', color: 'from-rose-600', content: 'Pasta carbonara recipe...' },
-                                        { title: 'Goals 2025', color: 'from-cyan-600', content: 'Fitness and career goals...' },
+                                        { title: 'Project Ideas', color: 'from-amber-600', glowColor: 'rgba(245, 158, 11, 0.15)', content: 'Brainstorming session notes...' },
+                                        { title: 'Meeting Notes', color: 'from-blue-600', glowColor: 'rgba(59, 130, 246, 0.15)', content: 'Q1 review action items...' },
+                                        { title: 'Reading List', color: 'from-purple-600', glowColor: 'rgba(168, 85, 247, 0.15)', content: 'Books to read this month...' },
+                                        { title: 'Travel Plans', color: 'from-emerald-600', glowColor: 'rgba(16, 185, 129, 0.15)', content: 'Weekend trip itinerary...' },
+                                        { title: 'Recipes', color: 'from-rose-600', glowColor: 'rgba(244, 63, 94, 0.15)', content: 'Pasta carbonara recipe...' },
+                                        { title: 'Goals 2025', color: 'from-cyan-600', glowColor: 'rgba(6, 182, 212, 0.15)', content: 'Fitness and career goals...' },
                                     ].map((note, i) => (
-                                        <div key={i} className="relative rounded-xl border border-white/10 bg-[#0f0f0f] p-4 overflow-hidden group hover:border-white/20 transition-all">
-                                            <div className={`absolute -bottom-3 left-0 right-0 h-12 bg-gradient-to-t ${note.color} to-transparent opacity-40 blur-xl pointer-events-none`} />
-                                            <div className="relative z-10">
-                                                <h4 className="text-xs font-semibold text-white mb-1 truncate">{note.title}</h4>
-                                                <p className="text-[10px] text-gray-500 truncate">{note.content}</p>
-                                            </div>
-                                        </div>
+                                        <MockupNoteCard key={i} title={note.title} content={note.content} color={note.color} glowColor={note.glowColor} mousePos={mousePos} />
                                     ))}
+
                                 </div>
                             </div>
                         </div>
@@ -341,25 +495,9 @@ export default function LandingPage() {
                     </div>
 
                     <div className="space-y-8">
-                        {steps.map((step, i) => {
-                            const [ref, isInView] = useInView();
-                            return (
-                                <div
-                                    key={i}
-                                    ref={ref}
-                                    className={`flex items-start gap-6 p-6 rounded-2xl border border-white/10 bg-white/[0.03] transition-all duration-700 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}
-                                    style={{ transitionDelay: `${i * 150}ms` }}
-                                >
-                                    <div className="w-12 h-12 shrink-0 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 font-bold text-sm">
-                                        {step.num}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-white font-semibold text-lg mb-1">{step.title}</h3>
-                                        <p className="text-gray-400 text-sm leading-relaxed">{step.desc}</p>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                        {steps.map((step, i) => (
+                            <StepCard key={i} index={i} num={step.num} title={step.title} desc={step.desc} />
+                        ))}
                     </div>
                 </div>
             </section>
