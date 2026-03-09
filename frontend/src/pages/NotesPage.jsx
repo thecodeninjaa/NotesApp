@@ -153,6 +153,58 @@ const SearchBar = ({ mousePos, value, onChange }) => {
   );
 };
 
+// ─── Time Filter Bar ───
+const timeFilterOptions = [
+  { key: 'all', label: 'All' },
+  { key: 'today', label: 'Today' },
+  { key: 'week', label: 'This Week' },
+  { key: 'month', label: 'This Month' },
+];
+
+const TimeFilterBar = ({ active, onChange }) => {
+  const activeClass = "relative px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold text-orange-600 dark:text-white bg-white dark:bg-white/10 border border-transparent dark:border-white/20 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.1)] overflow-hidden text-center";
+  const inactiveClass = "px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center";
+
+  return (
+    <div className="flex bg-orange-100/50 dark:bg-black/40 backdrop-blur-md border border-orange-200 dark:border-white/10 rounded-full p-1 shadow-inner">
+      {timeFilterOptions.map(opt => (
+        <button
+          key={opt.key}
+          onClick={() => onChange(active === opt.key ? 'all' : opt.key)}
+          className={active === opt.key ? activeClass : inactiveClass}
+        >
+          {active === opt.key && (
+            <div className="hidden dark:block absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-4 bg-white/40 blur-[6px] rounded-full" />
+          )}
+          <span className="relative z-10">{opt.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const filterByTime = (items, filter) => {
+  if (filter === 'all') return items;
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  return items.filter(item => {
+    const created = new Date(item.created_at);
+    if (filter === 'today') return created >= startOfToday;
+    if (filter === 'week') {
+      const weekAgo = new Date(startOfToday);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return created >= weekAgo;
+    }
+    if (filter === 'month') {
+      const monthAgo = new Date(startOfToday);
+      monthAgo.setDate(monthAgo.getDate() - 30);
+      return created >= monthAgo;
+    }
+    return true;
+  });
+};
+
 function NotesPage({ session, mousePos }) {
   // ... existing state ...
   const [notes, setNotes] = useState([]);
@@ -162,6 +214,8 @@ function NotesPage({ session, mousePos }) {
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [folderTimeFilter, setFolderTimeFilter] = useState('all');
+  const [noteTimeFilter, setNoteTimeFilter] = useState('all');
 
   useEffect(() => {
     fetchData();
@@ -292,31 +346,25 @@ function NotesPage({ session, mousePos }) {
         <section className="bg-white/80 dark:bg-transparent rounded-2xl py-6 xl:px-6 border border-orange-200 dark:border-transparent lg:shadow-sm dark:shadow-none">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-200">Recent Folders</h2>
-            <div className="flex bg-orange-100/50 dark:bg-black/40 backdrop-blur-md border border-orange-200 dark:border-white/10 rounded-full p-1 shadow-inner">
-              <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">Today</button>
-              <button className="relative px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold text-orange-600 dark:text-white bg-white dark:bg-white/10 border border-transparent dark:border-white/20 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.1)] overflow-hidden text-center">
-                <div className="hidden dark:block absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-4 bg-white/40 blur-[6px] rounded-full" />
-                <span className="relative z-10">This Week</span>
-              </button>
-              <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">This Month</button>
-            </div>
+            <TimeFilterBar active={folderTimeFilter} onChange={setFolderTimeFilter} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {loading ? (
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             ) : (
-              folders
-                .filter(folder => folder.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map((folder) => (
-                  <div key={folder.id} onClick={() => setSelectedFolderId(folder.id)}>
-                    <FolderCard
-                      title={folder.name}
-                      date={new Date(folder.created_at).toLocaleDateString()}
-                      color={folder.color || 'bg-blue-100'}
-                      mousePos={mousePos}
-                    />
-                  </div>
-                ))
+              filterByTime(
+                folders.filter(folder => folder.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                folderTimeFilter
+              ).map((folder) => (
+                <div key={folder.id} onClick={() => setSelectedFolderId(folder.id)}>
+                  <FolderCard
+                    title={folder.name}
+                    date={new Date(folder.created_at).toLocaleDateString()}
+                    color={folder.color || 'bg-blue-100'}
+                    mousePos={mousePos}
+                  />
+                </div>
+              ))
             )}
             <NewItemCard type="folder" onClick={() => setIsCreateFolderModalOpen(true)} mousePos={mousePos} />
           </div>
@@ -333,23 +381,19 @@ function NotesPage({ session, mousePos }) {
                   Clear Filter
                 </button>
               )}
-              <div className="flex bg-orange-100/50 dark:bg-black/40 backdrop-blur-md border border-orange-200 dark:border-white/10 rounded-full p-1 shadow-inner">
-                <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">Today</button>
-                <button className="relative px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold text-orange-600 dark:text-white bg-white dark:bg-white/10 border border-transparent dark:border-white/20 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.1)] overflow-hidden text-center">
-                  <div className="hidden dark:block absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-4 bg-white/40 blur-[6px] rounded-full" />
-                  <span className="relative z-10">This Week</span>
-                </button>
-                <button className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5 transition-all text-center">This Month</button>
-              </div>
+              <TimeFilterBar active={noteTimeFilter} onChange={setNoteTimeFilter} />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             {loading ? (
               <p className="text-gray-500 dark:text-gray-400">Loading...</p>
             ) : (
-              notes
-                .filter(note => selectedFolderId ? note.folder_id === selectedFolderId : true)
-                .filter(note => note.title.toLowerCase().includes(searchQuery.toLowerCase()))
+              filterByTime(
+                notes
+                  .filter(note => selectedFolderId ? note.folder_id === selectedFolderId : true)
+                  .filter(note => note.title.toLowerCase().includes(searchQuery.toLowerCase())),
+                noteTimeFilter
+              )
                 .map((note) => (
                   <NoteCard
                     key={note.id}
