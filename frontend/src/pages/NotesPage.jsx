@@ -9,7 +9,7 @@ import CreateFolderModal from '../components/CreateFolderModal';
 import ConfirmModal from '../components/ConfirmModal';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 
-const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
+const NoteCard = ({ note, onDelete, onEdit, onArchive, mousePos }) => {
   const [rect, setRect] = useState(null);
   const cardRef = useRef(null);
 
@@ -75,6 +75,13 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
               <FiFileText className="relative z-10 text-amber-600 dark:text-orange-50 drop-shadow-none dark:drop-shadow-[0_0_12px_rgba(251,146,60,1)]" size={22} />
             </div>
             <div onClick={(e) => e.stopPropagation()} className="flex gap-1 -mr-2 -mt-2">
+              <button 
+                onClick={() => onArchive(note.id)} 
+                title="Archive Note"
+                className="p-2 text-gray-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400 transition-colors"
+               >
+                <FiArchive size={18} />
+              </button>
               <button onClick={() => onEdit(note)} className="p-2 text-gray-400 hover:text-amber-600 dark:text-gray-500 dark:hover:text-white transition-colors">
                 <FiEdit size={18} />
               </button>
@@ -245,6 +252,8 @@ function NotesPage({ session, mousePos }) {
           .from('Notes')
           .select('*')
           .eq('user_id', user.id)
+          .eq('is_trashed', false)
+          .eq('is_archived', false)
           .order('created_at', { ascending: false }),
         supabase
           .from('Folders')
@@ -270,13 +279,31 @@ function NotesPage({ session, mousePos }) {
   const confirmDeleteNote = async () => {
     if (!noteToDelete) return;
     
-    const { error } = await supabase.from('Notes').delete().eq('id', noteToDelete.id);
+    // Soft delete: set is_trashed to true
+    const { error } = await supabase
+      .from('Notes')
+      .update({ is_trashed: true })
+      .eq('id', noteToDelete.id);
+      
     if (error) {
-      console.error('Error deleting note:', error);
+      console.error('Error moving note to trash:', error);
     } else {
       setNotes(notes.filter((note) => note.id !== noteToDelete.id));
     }
     setNoteToDelete(null);
+  };
+
+  const handleArchiveNote = async (noteId) => {
+    const { error } = await supabase
+      .from('Notes')
+      .update({ is_archived: true })
+      .eq('id', noteId);
+      
+    if (error) {
+      console.error('Error archiving note:', error);
+    } else {
+      setNotes(notes.filter((note) => note.id !== noteId));
+    }
   };
 
   const handleUpdateNote = async (updatedNote) => {
@@ -426,6 +453,7 @@ function NotesPage({ session, mousePos }) {
                     note={note}
                     onDelete={handleDeleteNote}
                     onEdit={setEditingNote}
+                    onArchive={handleArchiveNote}
                     mousePos={mousePos}
                   />
                 ))
@@ -453,8 +481,8 @@ function NotesPage({ session, mousePos }) {
 
       <ConfirmModal
         isOpen={!!noteToDelete}
-        title="Delete Note"
-        message={`Are you sure you want to delete "${noteToDelete?.title}"? This action cannot be undone.`}
+        title="Move to Trash"
+        message={`Are you sure you want to move "${noteToDelete?.title}" to the trash? You can restore it later.`}
         onConfirm={confirmDeleteNote}
         onCancel={() => setNoteToDelete(null)}
       />
