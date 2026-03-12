@@ -5,11 +5,11 @@ const FolderCard = ({ title, date, color, mousePos }) => {
   const [rect, setRect] = useState(null);
   const cardRef = useRef(null);
 
-  useEffect(() => {
+  const handleMouseEnter = () => {
     if (cardRef.current) {
       setRect(cardRef.current.getBoundingClientRect());
     }
-  }, []);
+  };
 
   // Consolidated color themes mapping
   const colorThemes = {
@@ -87,7 +87,7 @@ const FolderCard = ({ title, date, color, mousePos }) => {
   const lightIconColor = theme.lightIconColor;
 
   return (
-    <div ref={cardRef} className="relative group cursor-pointer transition-all duration-300 hover:scale-[1.02]">
+    <div ref={cardRef} onMouseEnter={handleMouseEnter} className="relative group cursor-pointer transition-all duration-300 hover:scale-[1.02]">
       {/* === LIGHT MODE: BEHIND-CARD GLOW === */}
       <div className={`absolute -inset-x-2 -bottom-4 top-[30%] rounded-[2rem] ${lightBehindGlow} blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500 dark:hidden pointer-events-none`} />
       <div className={`absolute bottom-0 left-[5%] right-[5%] h-[6px] rounded-full ${lightBehindLine} blur-[4px] opacity-70 group-hover:opacity-90 transition-opacity duration-500 dark:hidden pointer-events-none`} />

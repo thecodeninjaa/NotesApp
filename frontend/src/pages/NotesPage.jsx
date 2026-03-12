@@ -12,14 +12,14 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   const [rect, setRect] = useState(null);
   const cardRef = useRef(null);
 
-  useEffect(() => {
+  const handleMouseEnter = () => {
     if (cardRef.current) {
       setRect(cardRef.current.getBoundingClientRect());
     }
-  }, []);
+  };
 
   return (
-    <div ref={cardRef} className="relative group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
+    <div ref={cardRef} onMouseEnter={handleMouseEnter} className="relative group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
       {/* === LIGHT MODE: BEHIND-CARD GLOW (like floating above a light) === */}
       {/* Wide soft haze behind the card */}
       <div className="absolute -inset-x-2 -bottom-4 top-[30%] rounded-[2rem] bg-amber-400/60 blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500 dark:hidden pointer-events-none" />

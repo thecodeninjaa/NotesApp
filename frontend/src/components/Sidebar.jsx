@@ -10,17 +10,18 @@ const SidebarGlowItem = ({ mousePos, children, className, as: Component = 'butto
   const [rect, setRect] = useState(null);
   const itemRef = useRef(null);
 
-  useEffect(() => {
+  const handleMouseEnter = () => {
     if (itemRef.current) {
       setRect(itemRef.current.getBoundingClientRect());
     }
-  }, []);
+  };
 
   return (
     <Component
       ref={itemRef}
       to={to}
       onClick={onClick}
+      onMouseEnter={handleMouseEnter}
       aria-label={ariaLabel}
       className={className}
     >
