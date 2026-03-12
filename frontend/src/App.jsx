@@ -9,6 +9,7 @@ import { supabase } from './supabaseClient';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import LandingPage from './pages/LandingPage';
+import ComingSoonPage from './pages/ComingSoonPage';
 import NotFoundPage from './pages/NotFoundPage';
 import TrashPage from './pages/TrashPage';
 import ArchivePage from './pages/ArchivePage';

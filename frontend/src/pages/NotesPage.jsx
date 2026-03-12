@@ -252,8 +252,8 @@ function NotesPage({ session, mousePos }) {
           .from('Notes')
           .select('*')
           .eq('user_id', user.id)
-          .eq('is_trashed', false)
-          .eq('is_archived', false)
+          .neq('is_trashed', true)
+          .neq('is_archived', true)
           .order('created_at', { ascending: false }),
         supabase
           .from('Folders')
