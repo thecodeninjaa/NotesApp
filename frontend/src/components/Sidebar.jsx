@@ -91,9 +91,9 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
       </button>
 
       {/* Logo */}
-      <div className={`text-2xl font-bold mb-6 transition-all text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-400 dark:from-amber-400 dark:to-orange-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] ${isCollapsed ? 'text-center text-xl' : ''}`}>
+      <Link to="/" className={`block text-2xl font-bold mb-6 transition-all text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-400 dark:from-amber-400 dark:to-orange-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] ${isCollapsed ? 'text-center text-xl' : ''}`}>
         {isCollapsed ? 'N' : 'NoteFlow'}
-      </div>
+      </Link>
 
       {/* Add New Button & Menu Container */}
       <div className="relative mb-6" ref={addMenuRef}>
@@ -137,6 +137,21 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
       {/* Navigation Links */}
       <nav className="grow">
         <ul className="space-y-3">
+          <li>
+            <SidebarGlowItem
+              as={Link}
+              to="/"
+              mousePos={mousePos}
+              className={`relative overflow-hidden group flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white dark:hover:bg-[#1a1a1a]/80 p-3 rounded-xl transition-all border border-transparent dark:hover:border-white/10 ${isCollapsed ? 'justify-center' : ''} ${isActive('/') ? 'dark:bg-white/5 dark:border-white/10 dark:text-white' : ''}`}
+            >
+              {/* Amber Glow */}
+              <div className="absolute -bottom-6 left-0 right-0 h-16 bg-gradient-to-t from-orange-500 to-transparent opacity-0 blur-xl group-hover:opacity-40 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute bottom-0 left-[0%] right-[0%] h-[2px] bg-orange-400 blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+              <FiFileText className={`relative z-10 group-hover:drop-shadow-[0_0_8px_rgba(249,115,22,0.8)] ${!isCollapsed ? 'mr-3' : ''}`} />
+              {!isCollapsed && <span className="relative z-10 font-medium">My Notes</span>}
+            </SidebarGlowItem>
+          </li>
           <li>
             <SidebarGlowItem
               as={Link}
