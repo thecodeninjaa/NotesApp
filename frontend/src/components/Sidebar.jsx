@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   FiPlus, FiCalendar, FiArchive, FiTrash2, FiSun, FiMoon,
-  FiChevronsLeft, FiChevronsRight // Icons for toggle
+  FiChevronsLeft, FiChevronsRight, FiFolder, FiFileText // Icons for toggle
 } from 'react-icons/fi';
 import { useTheme } from '../context/ThemeContext';
 
@@ -10,17 +10,18 @@ const SidebarGlowItem = ({ mousePos, children, className, as: Component = 'butto
   const [rect, setRect] = useState(null);
   const itemRef = useRef(null);
 
-  useEffect(() => {
+  const handleMouseEnter = () => {
     if (itemRef.current) {
       setRect(itemRef.current.getBoundingClientRect());
     }
-  }, []);
+  };
 
   return (
     <Component
       ref={itemRef}
       to={to}
       onClick={onClick}
+      onMouseEnter={handleMouseEnter}
       aria-label={ariaLabel}
       className={className}
     >
@@ -42,6 +43,29 @@ const SidebarGlowItem = ({ mousePos, children, className, as: Component = 'butto
 function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
   const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+  const addMenuRef = useRef(null);
+
+  const handleCreateNote = () => {
+    setIsAddMenuOpen(false);
+    window.dispatchEvent(new CustomEvent('noteflow:add-note'));
+  };
+
+  const handleCreateFolder = () => {
+    setIsAddMenuOpen(false);
+    window.dispatchEvent(new CustomEvent('noteflow:add-folder'));
+  };
+
+  // Close left menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (addMenuRef.current && !addMenuRef.current.contains(event.target)) {
+        setIsAddMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const isActive = (path) => location.pathname === path;
 
@@ -71,20 +95,44 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
         {isCollapsed ? 'N' : 'NoteFlow'}
       </div>
 
-      {/* Add New Button - Vibrant Orange Glow */}
-      <SidebarGlowItem
-        as="button"
-        mousePos={mousePos}
-        className={`relative overflow-hidden group w-full flex items-center justify-center bg-orange-500 dark:bg-white/5 border border-transparent dark:border-white/10 text-white py-2.5 px-4 rounded-xl shadow-[0_0_15px_-3px_rgba(249,115,22,0.4)] dark:shadow-[0_0_20px_-5px_rgba(249,115,22,0.5)] transition-all mb-6 ${isCollapsed ? 'px-2' : ''} hover:scale-[1.02] dark:hover:border-orange-500/50`}
-      >
-        {/* Glow Haze */}
-        <div className="absolute -bottom-6 left-0 right-0 h-16 bg-gradient-to-t from-orange-500 to-transparent opacity-0 blur-xl group-hover:opacity-80 transition-opacity duration-500 pointer-events-none" />
-        {/* Glow Line */}
-        <div className="absolute bottom-0 left-[0%] right-[0%] h-[2px] bg-orange-400 blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      {/* Add New Button & Menu Container */}
+      <div className="relative mb-6" ref={addMenuRef}>
+        <SidebarGlowItem
+          as="button"
+          mousePos={mousePos}
+          onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}
+          className={`relative overflow-hidden group w-full flex items-center justify-center bg-orange-500 dark:bg-white/5 border border-transparent dark:border-white/10 text-white py-2.5 px-4 rounded-xl shadow-[0_0_15px_-3px_rgba(249,115,22,0.4)] dark:shadow-[0_0_20px_-5px_rgba(249,115,22,0.5)] transition-all ${isCollapsed ? 'px-2' : ''} hover:scale-[1.02] dark:hover:border-orange-500/50`}
+        >
+          {/* Glow Haze */}
+          <div className="absolute -bottom-6 left-0 right-0 h-16 bg-gradient-to-t from-orange-500 to-transparent opacity-0 blur-xl group-hover:opacity-80 transition-opacity duration-500 pointer-events-none" />
+          {/* Glow Line */}
+          <div className="absolute bottom-0 left-[0%] right-[0%] h-[2px] bg-orange-400 blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-        <FiPlus className={`relative z-10 ${!isCollapsed ? 'mr-2' : ''}`} />
-        {!isCollapsed && <span className="relative z-10 font-semibold tracking-wide">Add new</span>}
-      </SidebarGlowItem>
+          <FiPlus className={`relative z-10 ${!isCollapsed ? 'mr-2' : ''}`} />
+          {!isCollapsed && <span className="relative z-10 font-semibold tracking-wide">Add new</span>}
+        </SidebarGlowItem>
+
+        {/* The Dropdown Menu */}
+        {isAddMenuOpen && (
+          <div className={`absolute top-full mt-2 w-48 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-[100] animate-in slide-in-from-top-2 fade-in duration-200 ${isCollapsed ? 'left-0' : 'left-0'}`}>
+            <button
+              onClick={handleCreateNote}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-white/5 hover:text-orange-600 dark:hover:text-white transition-colors text-left"
+            >
+              <FiFileText size={16} />
+              <span className="font-medium">New Note</span>
+            </button>
+            <div className="h-[1px] bg-gray-100 dark:bg-white/5" />
+            <button
+              onClick={handleCreateFolder}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-white/5 hover:text-orange-600 dark:hover:text-white transition-colors text-left"
+            >
+              <FiFolder size={16} />
+              <span className="font-medium">New Folder</span>
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Navigation Links */}
       <nav className="grow">
@@ -169,9 +217,9 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
           <div className="relative z-10 w-20 h-20 bg-white/10 border border-white/20 mx-auto mb-4 rounded-full flex items-center justify-center shadow-inner group-hover:bg-white/20 transition-colors">
             <span className="text-xl">🚀</span>
           </div>
-          <button className="relative z-10 w-full bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl shadow-[0_0_15px_-3px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition-colors text-sm tracking-wide">
+          <Link to="/pro" className="block relative z-10 w-full bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl shadow-[0_0_15px_-3px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition-colors text-sm tracking-wide text-center">
             Upgrade Pro
-          </button>
+          </Link>
         </div>
       )}
 

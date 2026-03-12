@@ -85,9 +85,9 @@ function LoginPage() {
                 <label className="text-sm font-medium text-gray-400" htmlFor="login-password">
                   Password
                 </label>
-                <a href="#" className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors">
+                <Link to="/forgot-password" className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors">
                   Forgot password?
-                </a>
+                </Link>
               </div>
               <div className="relative">
                 <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={16} />

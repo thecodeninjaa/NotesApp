@@ -1,24 +1,26 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { FiSearch, FiUser, FiMoreHorizontal, FiClock, FiLogOut, FiEdit, FiFileText } from 'react-icons/fi';
+import { FiSearch, FiUser, FiTrash2, FiClock, FiLogOut, FiEdit, FiFileText } from 'react-icons/fi';
 import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
 import CreateFolderModal from '../components/CreateFolderModal';
+import ConfirmModal from '../components/ConfirmModal';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 
 const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   const [rect, setRect] = useState(null);
   const cardRef = useRef(null);
 
-  useEffect(() => {
+  const handleMouseEnter = () => {
     if (cardRef.current) {
       setRect(cardRef.current.getBoundingClientRect());
     }
-  }, []);
+  };
 
   return (
-    <div ref={cardRef} className="relative group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
+    <div ref={cardRef} onMouseEnter={handleMouseEnter} className="relative group cursor-pointer transition-transform duration-300 hover:scale-[1.02]">
       {/* === LIGHT MODE: BEHIND-CARD GLOW (like floating above a light) === */}
       {/* Wide soft haze behind the card */}
       <div className="absolute -inset-x-2 -bottom-4 top-[30%] rounded-[2rem] bg-amber-400/60 blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500 dark:hidden pointer-events-none" />
@@ -76,8 +78,8 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
               <button onClick={() => onEdit(note)} className="p-2 text-gray-400 hover:text-amber-600 dark:text-gray-500 dark:hover:text-white transition-colors">
                 <FiEdit size={18} />
               </button>
-              <button onClick={() => onDelete(note.id)} className="p-2 text-gray-400 hover:text-amber-600 dark:text-gray-500 dark:hover:text-white transition-colors">
-                <FiMoreHorizontal size={18} />
+              <button onClick={() => onDelete(note.id)} className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-500 transition-colors">
+                <FiTrash2 size={18} />
               </button>
             </div>
           </div>
@@ -216,10 +218,23 @@ function NotesPage({ session, mousePos }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [folderTimeFilter, setFolderTimeFilter] = useState('all');
   const [noteTimeFilter, setNoteTimeFilter] = useState('all');
+  const [noteToDelete, setNoteToDelete] = useState(null);
 
   useEffect(() => {
     fetchData();
-  }, []);
+
+    // Listen to sidebar events
+    const onAddNoteEvent = () => handleCreateNote();
+    const onAddFolderEvent = () => setIsCreateFolderModalOpen(true);
+
+    window.addEventListener('noteflow:add-note', onAddNoteEvent);
+    window.addEventListener('noteflow:add-folder', onAddFolderEvent);
+
+    return () => {
+      window.removeEventListener('noteflow:add-note', onAddNoteEvent);
+      window.removeEventListener('noteflow:add-folder', onAddFolderEvent);
+    };
+  }, [selectedFolderId]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -247,13 +262,21 @@ function NotesPage({ session, mousePos }) {
     setLoading(false);
   };
 
-  const handleDeleteNote = async (noteId) => {
-    const { error } = await supabase.from('Notes').delete().eq('id', noteId);
+  const handleDeleteNote = (noteId) => {
+    const note = notes.find(n => n.id === noteId);
+    setNoteToDelete(note);
+  };
+
+  const confirmDeleteNote = async () => {
+    if (!noteToDelete) return;
+    
+    const { error } = await supabase.from('Notes').delete().eq('id', noteToDelete.id);
     if (error) {
       console.error('Error deleting note:', error);
     } else {
-      setNotes(notes.filter((note) => note.id !== noteId));
+      setNotes(notes.filter((note) => note.id !== noteToDelete.id));
     }
+    setNoteToDelete(null);
   };
 
   const handleUpdateNote = async (updatedNote) => {
@@ -271,6 +294,9 @@ function NotesPage({ session, mousePos }) {
     }
   };
 
+  // Wrap handleCreateNote in useCallback or don't put it in dependency array if not using it there, 
+  // but since we are accessing selectedFolderId, we need latest closures. 
+  // Above we passed `[selectedFolderId]` to useEffect so the event listener always has the latest selection.
   const handleCreateNote = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -350,7 +376,7 @@ function NotesPage({ session, mousePos }) {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {loading ? (
-              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+              <LoadingSkeleton count={4} type="folder" />
             ) : (
               filterByTime(
                 folders.filter(folder => folder.name.toLowerCase().includes(searchQuery.toLowerCase())),
@@ -386,7 +412,7 @@ function NotesPage({ session, mousePos }) {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             {loading ? (
-              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+              <LoadingSkeleton count={5} type="note" />
             ) : (
               filterByTime(
                 notes
@@ -424,6 +450,14 @@ function NotesPage({ session, mousePos }) {
           onClose={() => setIsCreateFolderModalOpen(false)}
         />
       )}
+
+      <ConfirmModal
+        isOpen={!!noteToDelete}
+        title="Delete Note"
+        message={`Are you sure you want to delete "${noteToDelete?.title}"? This action cannot be undone.`}
+        onConfirm={confirmDeleteNote}
+        onCancel={() => setNoteToDelete(null)}
+      />
     </main>
   )
 };

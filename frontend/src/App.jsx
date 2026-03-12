@@ -58,10 +58,12 @@ function App() {
             <Routes>
               <Route path="/login" element={isLoggedIn ? <Navigate to="/" replace /> : <LoginPage />} />
               <Route path="/signup" element={isLoggedIn ? <Navigate to="/" replace /> : <SignupPage />} />
+              <Route path="/forgot-password" element={isLoggedIn ? <Navigate to="/" replace /> : <ComingSoonPage title="Forgot Password" />} />
               <Route path="/" element={isLoggedIn ? <NotesPage session={session} mousePos={mousePos} /> : <LandingPage />} />
               <Route path="/calendar" element={isLoggedIn ? <ComingSoonPage title="Calendar" /> : <Navigate to="/login" replace />} />
               <Route path="/archive" element={isLoggedIn ? <ComingSoonPage title="Archive" /> : <Navigate to="/login" replace />} />
               <Route path="/trash" element={isLoggedIn ? <ComingSoonPage title="Trash" /> : <Navigate to="/login" replace />} />
+              <Route path="/pro" element={isLoggedIn ? <ComingSoonPage title="Pro Plan" /> : <Navigate to="/login" replace />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </div>

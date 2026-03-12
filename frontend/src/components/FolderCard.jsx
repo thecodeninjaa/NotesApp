@@ -5,124 +5,89 @@ const FolderCard = ({ title, date, color, mousePos }) => {
   const [rect, setRect] = useState(null);
   const cardRef = useRef(null);
 
-  useEffect(() => {
+  const handleMouseEnter = () => {
     if (cardRef.current) {
       setRect(cardRef.current.getBoundingClientRect());
     }
-  }, []);
-
-  // Map the existing light background classes to their corresponding glowing colors
-  const glowMap = {
-    'bg-blue-100': 'rgba(37, 99, 235, 0.15)', // blue-600
-    'bg-pink-100': 'rgba(219, 39, 119, 0.15)', // pink-600
-    'bg-yellow-100': 'rgba(245, 158, 11, 0.15)', // amber-500
-    'bg-green-100': 'rgba(16, 185, 129, 0.15)', // emerald-500
-    'bg-purple-100': 'rgba(147, 51, 234, 0.15)', // purple-600
-    'bg-rose-100': 'rgba(225, 29, 72, 0.15)', // rose-600
   };
 
-  const bottomGlowMap = {
-    'bg-blue-100': 'from-blue-600',
-    'bg-pink-100': 'from-pink-600',
-    'bg-yellow-100': 'from-amber-500',
-    'bg-green-100': 'from-emerald-500',
-    'bg-purple-100': 'from-purple-600',
-    'bg-rose-100': 'from-rose-600',
+  // Consolidated color themes mapping
+  const colorThemes = {
+    'bg-blue-100': {
+      glow: 'rgba(37, 99, 235, 0.15)',
+      bottomGlow: 'from-blue-600',
+      border: 'bg-blue-400',
+      innerGlow: 'from-blue-500/40',
+      lightBehindGlow: 'bg-blue-400/60',
+      lightBehindLine: 'bg-blue-400',
+      lightIconColor: 'text-blue-500'
+    },
+    'bg-pink-100': {
+      glow: 'rgba(219, 39, 119, 0.15)',
+      bottomGlow: 'from-pink-600',
+      border: 'bg-pink-400',
+      innerGlow: 'from-pink-500/40',
+      lightBehindGlow: 'bg-pink-400/60',
+      lightBehindLine: 'bg-pink-400',
+      lightIconColor: 'text-pink-500'
+    },
+    'bg-yellow-100': {
+      glow: 'rgba(245, 158, 11, 0.15)',
+      bottomGlow: 'from-amber-500',
+      border: 'bg-amber-300',
+      innerGlow: 'from-amber-400/40',
+      lightBehindGlow: 'bg-amber-400/60',
+      lightBehindLine: 'bg-amber-400',
+      lightIconColor: 'text-amber-500'
+    },
+    'bg-green-100': {
+      glow: 'rgba(16, 185, 129, 0.15)',
+      bottomGlow: 'from-emerald-500',
+      border: 'bg-emerald-400',
+      innerGlow: 'from-emerald-400/40',
+      lightBehindGlow: 'bg-emerald-400/60',
+      lightBehindLine: 'bg-emerald-400',
+      lightIconColor: 'text-emerald-500'
+    },
+    'bg-purple-100': {
+      glow: 'rgba(147, 51, 234, 0.15)',
+      bottomGlow: 'from-purple-600',
+      border: 'bg-purple-400',
+      innerGlow: 'from-purple-500/40',
+      lightBehindGlow: 'bg-purple-400/60',
+      lightBehindLine: 'bg-purple-400',
+      lightIconColor: 'text-purple-500'
+    },
+    'bg-rose-100': {
+      glow: 'rgba(225, 29, 72, 0.15)',
+      bottomGlow: 'from-rose-600',
+      border: 'bg-rose-400',
+      innerGlow: 'from-rose-500/40',
+      lightBehindGlow: 'bg-rose-400/60',
+      lightBehindLine: 'bg-rose-400',
+      lightIconColor: 'text-rose-500'
+    }
   };
 
-  const borderGlowMap = {
-    'bg-blue-100': 'bg-blue-400',
-    'bg-pink-100': 'bg-pink-400',
-    'bg-yellow-100': 'bg-amber-300',
-    'bg-green-100': 'bg-emerald-400',
-    'bg-purple-100': 'bg-purple-400',
-    'bg-rose-100': 'bg-rose-400',
+  const theme = colorThemes[color] || {
+    glow: 'rgba(75, 85, 99, 0.15)',
+    bottomGlow: 'from-gray-600',
+    border: 'bg-gray-400',
+    innerGlow: 'from-gray-500/40',
+    lightBehindGlow: 'bg-gray-400/60',
+    lightBehindLine: 'bg-gray-400',
+    lightIconColor: 'text-gray-500',
   };
 
-  const innerGlowMap = {
-    'bg-blue-100': 'from-blue-500/40',
-    'bg-pink-100': 'from-pink-500/40',
-    'bg-yellow-100': 'from-amber-400/40',
-    'bg-green-100': 'from-emerald-400/40',
-    'bg-purple-100': 'from-purple-500/40',
-    'bg-rose-100': 'from-rose-500/40',
-  };
-
-  const lightModeBlobMap = {
-    'bg-blue-100': 'from-cyan-100 via-blue-300 to-blue-500',
-    'bg-pink-100': 'from-fuchsia-100 via-pink-300 to-rose-400',
-    'bg-yellow-100': 'from-orange-100 via-amber-300 to-yellow-500',
-    'bg-green-100': 'from-emerald-100 via-teal-300 to-green-500',
-    'bg-purple-100': 'from-purple-100 via-purple-300 to-indigo-400',
-    'bg-rose-100': 'from-rose-100 via-rose-300 to-pink-500',
-  };
-
-  // Light mode inner gradient maps
-  const lightInnerGradientMap = {
-    'bg-blue-100': 'from-sky-100/80 via-blue-200/70 to-indigo-400/60',
-    'bg-pink-100': 'from-pink-100/80 via-fuchsia-200/70 to-rose-400/60',
-    'bg-yellow-100': 'from-amber-100/80 via-orange-200/70 to-yellow-400/60',
-    'bg-green-100': 'from-emerald-100/80 via-teal-200/70 to-green-400/60',
-    'bg-purple-100': 'from-violet-100/80 via-purple-200/70 to-indigo-400/60',
-    'bg-rose-100': 'from-rose-100/80 via-pink-200/70 to-fuchsia-400/60',
-  };
-
-  const lightHotspotMap = {
-    'bg-blue-100': 'from-blue-400/50 via-indigo-300/30',
-    'bg-pink-100': 'from-fuchsia-400/50 via-pink-300/30',
-    'bg-yellow-100': 'from-amber-400/50 via-orange-300/30',
-    'bg-green-100': 'from-emerald-400/50 via-teal-300/30',
-    'bg-purple-100': 'from-purple-400/50 via-violet-300/30',
-    'bg-rose-100': 'from-rose-400/50 via-pink-300/30',
-  };
-
-  const lightOuterGlowMap = {
-    'bg-blue-100': 'from-blue-200/60 via-indigo-300/40 to-cyan-200/50',
-    'bg-pink-100': 'from-pink-200/60 via-fuchsia-300/40 to-rose-200/50',
-    'bg-yellow-100': 'from-amber-200/60 via-orange-300/40 to-yellow-200/50',
-    'bg-green-100': 'from-emerald-200/60 via-teal-300/40 to-green-200/50',
-    'bg-purple-100': 'from-purple-200/60 via-violet-300/40 to-indigo-200/50',
-    'bg-rose-100': 'from-rose-200/60 via-pink-300/40 to-fuchsia-200/50',
-  };
-
-  // Behind-card glow color for light mode
-  const lightBehindGlowMap = {
-    'bg-blue-100': 'bg-blue-400/60',
-    'bg-pink-100': 'bg-pink-400/60',
-    'bg-yellow-100': 'bg-amber-400/60',
-    'bg-green-100': 'bg-emerald-400/60',
-    'bg-purple-100': 'bg-purple-400/60',
-    'bg-rose-100': 'bg-rose-400/60',
-  };
-
-  const lightBehindLineMap = {
-    'bg-blue-100': 'bg-blue-400',
-    'bg-pink-100': 'bg-pink-400',
-    'bg-yellow-100': 'bg-amber-400',
-    'bg-green-100': 'bg-emerald-400',
-    'bg-purple-100': 'bg-purple-400',
-    'bg-rose-100': 'bg-rose-400',
-  };
-
-  const lightIconColorMap = {
-    'bg-blue-100': 'text-blue-500',
-    'bg-pink-100': 'text-pink-500',
-    'bg-yellow-100': 'text-amber-500',
-    'bg-green-100': 'text-emerald-500',
-    'bg-purple-100': 'text-purple-500',
-    'bg-rose-100': 'text-rose-500',
-  };
-
-  const glowColorStr = glowMap[color] || 'rgba(75, 85, 99, 0.15)';
-  const bottomGlowColor = bottomGlowMap[color] || 'from-gray-600';
-  const borderColor = borderGlowMap[color] || 'bg-gray-400';
-  const innerGlow = innerGlowMap[color] || 'from-gray-500/40';
-  const lightBehindGlow = lightBehindGlowMap[color] || 'bg-gray-400/60';
-  const lightBehindLine = lightBehindLineMap[color] || 'bg-gray-400';
-  const lightIconColor = lightIconColorMap[color] || 'text-gray-500';
+  const glowColorStr = theme.glow;
+  const bottomGlowColor = theme.bottomGlow;
+  const borderColor = theme.border;
+  const lightBehindGlow = theme.lightBehindGlow;
+  const lightBehindLine = theme.lightBehindLine;
+  const lightIconColor = theme.lightIconColor;
 
   return (
-    <div ref={cardRef} className="relative group cursor-pointer transition-all duration-300 hover:scale-[1.02]">
+    <div ref={cardRef} onMouseEnter={handleMouseEnter} className="relative group cursor-pointer transition-all duration-300 hover:scale-[1.02]">
       {/* === LIGHT MODE: BEHIND-CARD GLOW === */}
       <div className={`absolute -inset-x-2 -bottom-4 top-[30%] rounded-[2rem] ${lightBehindGlow} blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-500 dark:hidden pointer-events-none`} />
       <div className={`absolute bottom-0 left-[5%] right-[5%] h-[6px] rounded-full ${lightBehindLine} blur-[4px] opacity-70 group-hover:opacity-90 transition-opacity duration-500 dark:hidden pointer-events-none`} />
