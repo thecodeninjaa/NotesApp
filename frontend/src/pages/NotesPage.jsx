@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { FiSearch, FiUser, FiTrash2, FiClock, FiLogOut, FiEdit, FiFileText } from 'react-icons/fi';
+import { FiSearch, FiUser, FiTrash2, FiClock, FiLogOut, FiEdit, FiFileText, FiArchive } from 'react-icons/fi';
 import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
