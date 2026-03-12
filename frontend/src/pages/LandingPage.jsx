@@ -131,7 +131,7 @@ function FAQItem({ question, answer, index }) {
 }
 
 // ─── Pricing Card ───
-function PricingCard({ name, price, features, highlighted, index }) {
+function PricingCard({ name, price, features, highlighted, buttonText, isWaitlist, index }) {
     const [ref, isInView] = useInView();
     const [mousePos, setMousePos] = useState(null);
     const [rect, setRect] = useState(null);
@@ -182,10 +182,10 @@ function PricingCard({ name, price, features, highlighted, index }) {
                 ))}
             </ul>
             <Link
-                to="/signup"
+                to={isWaitlist ? "#" : "/signup"}
                 className={`relative z-10 w-full text-center py-2.5 rounded-xl font-semibold text-sm transition-all ${highlighted ? 'bg-amber-500 text-black hover:bg-amber-400 shadow-[0_0_20px_-5px_rgba(245,158,11,0.4)]' : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'}`}
             >
-                Get Started
+                {buttonText || 'Get Started'}
             </Link>
         </div>
     );
@@ -306,9 +306,8 @@ export default function LandingPage() {
     ];
 
     const pricing = [
-        { name: 'Free', price: 'Free', features: ['Unlimited notes', 'Up to 5 folders', 'Cloud sync', 'Dark & Light mode', 'Community support'], highlighted: false },
-        { name: 'Pro', price: '$9', features: ['Everything in Free', 'Unlimited folders', 'Priority support', 'Advanced search filters', 'Export to PDF'], highlighted: true },
-        { name: 'Enterprise', price: '$29', features: ['Everything in Pro', 'Team collaboration', 'Admin dashboard', 'API access', '24/7 dedicated support'], highlighted: false },
+        { name: 'Beta Access', price: 'Free', features: ['Unlimited notes', 'Unlimited folders', 'Cloud sync', 'Dark & Light mode', 'Community support'], highlighted: true, buttonText: 'Get Started Free' },
+        { name: 'Pro (Coming Soon)', price: '$9', features: ['Everything in Beta', 'Advanced search filters', 'Export to PDF', 'Priority support', 'Team collaboration'], highlighted: false, buttonText: 'Join Waitlist', isWaitlist: true },
     ];
 
     return (
@@ -512,15 +511,15 @@ export default function LandingPage() {
                             <FiStar size={14} /> Pricing
                         </span>
                         <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
-                            Simple,{' '}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300">Transparent Pricing</span>
+                            100% Free{' '}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-300">While in Beta</span>
                         </h2>
-                        <p className="text-gray-400">Start free. Upgrade when you're ready.</p>
+                        <p className="text-gray-400">Enjoy full premium features for free during our beta period.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto gap-6">
                         {pricing.map((p, i) => (
-                            <PricingCard key={i} index={i} name={p.name} price={p.price} features={p.features} highlighted={p.highlighted} />
+                            <PricingCard key={i} index={i} name={p.name} price={p.price} features={p.features} highlighted={p.highlighted} buttonText={p.buttonText} isWaitlist={p.isWaitlist} />
                         ))}
                     </div>
                 </div>
