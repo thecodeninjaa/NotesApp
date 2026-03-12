@@ -109,7 +109,6 @@ const ArchivePage = ({ session, mousePos }) => {
         .select('*')
         .eq('user_id', user.id)
         .eq('is_archived', true)
-        .neq('is_trashed', true)
         .order('created_at', { ascending: false });
 
       if (error) console.error('Error fetching archived notes:', error);
