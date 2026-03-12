@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { FiSearch, FiUser, FiMoreHorizontal, FiClock, FiLogOut, FiEdit, FiFileText } from 'react-icons/fi';
+import { FiSearch, FiUser, FiTrash2, FiClock, FiLogOut, FiEdit, FiFileText } from 'react-icons/fi';
 import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
@@ -77,8 +77,8 @@ const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
               <button onClick={() => onEdit(note)} className="p-2 text-gray-400 hover:text-amber-600 dark:text-gray-500 dark:hover:text-white transition-colors">
                 <FiEdit size={18} />
               </button>
-              <button onClick={() => onDelete(note.id)} className="p-2 text-gray-400 hover:text-amber-600 dark:text-gray-500 dark:hover:text-white transition-colors">
-                <FiMoreHorizontal size={18} />
+              <button onClick={() => onDelete(note.id)} className="p-2 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-500 transition-colors">
+                <FiTrash2 size={18} />
               </button>
             </div>
           </div>
