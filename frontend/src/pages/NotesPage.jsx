@@ -7,6 +7,7 @@ import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
 import CreateFolderModal from '../components/CreateFolderModal';
 import ConfirmModal from '../components/ConfirmModal';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 
 const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   const [rect, setRect] = useState(null);
@@ -360,7 +361,7 @@ function NotesPage({ session, mousePos }) {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {loading ? (
-              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+              <LoadingSkeleton count={4} type="folder" />
             ) : (
               filterByTime(
                 folders.filter(folder => folder.name.toLowerCase().includes(searchQuery.toLowerCase())),
@@ -396,7 +397,7 @@ function NotesPage({ session, mousePos }) {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             {loading ? (
-              <p className="text-gray-500 dark:text-gray-400">Loading...</p>
+              <LoadingSkeleton count={5} type="note" />
             ) : (
               filterByTime(
                 notes
