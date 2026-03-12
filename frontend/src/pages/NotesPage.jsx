@@ -6,6 +6,7 @@ import EditNoteModal from '../components/EditNoteModal';
 import FolderCard from '../components/FolderCard';
 import NewItemCard from '../components/NewItemCard';
 import CreateFolderModal from '../components/CreateFolderModal';
+import ConfirmModal from '../components/ConfirmModal';
 
 const NoteCard = ({ note, onDelete, onEdit, mousePos }) => {
   const [rect, setRect] = useState(null);
@@ -216,6 +217,7 @@ function NotesPage({ session, mousePos }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [folderTimeFilter, setFolderTimeFilter] = useState('all');
   const [noteTimeFilter, setNoteTimeFilter] = useState('all');
+  const [noteToDelete, setNoteToDelete] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -247,13 +249,21 @@ function NotesPage({ session, mousePos }) {
     setLoading(false);
   };
 
-  const handleDeleteNote = async (noteId) => {
-    const { error } = await supabase.from('Notes').delete().eq('id', noteId);
+  const handleDeleteNote = (noteId) => {
+    const note = notes.find(n => n.id === noteId);
+    setNoteToDelete(note);
+  };
+
+  const confirmDeleteNote = async () => {
+    if (!noteToDelete) return;
+    
+    const { error } = await supabase.from('Notes').delete().eq('id', noteToDelete.id);
     if (error) {
       console.error('Error deleting note:', error);
     } else {
-      setNotes(notes.filter((note) => note.id !== noteId));
+      setNotes(notes.filter((note) => note.id !== noteToDelete.id));
     }
+    setNoteToDelete(null);
   };
 
   const handleUpdateNote = async (updatedNote) => {
@@ -424,6 +434,14 @@ function NotesPage({ session, mousePos }) {
           onClose={() => setIsCreateFolderModalOpen(false)}
         />
       )}
+
+      <ConfirmModal
+        isOpen={!!noteToDelete}
+        title="Delete Note"
+        message={`Are you sure you want to delete "${noteToDelete?.title}"? This action cannot be undone.`}
+        onConfirm={confirmDeleteNote}
+        onCancel={() => setNoteToDelete(null)}
+      />
     </main>
   )
 };
