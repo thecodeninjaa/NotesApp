@@ -222,7 +222,19 @@ function NotesPage({ session, mousePos }) {
 
   useEffect(() => {
     fetchData();
-  }, []);
+
+    // Listen to sidebar events
+    const onAddNoteEvent = () => handleCreateNote();
+    const onAddFolderEvent = () => setIsCreateFolderModalOpen(true);
+
+    window.addEventListener('noteflow:add-note', onAddNoteEvent);
+    window.addEventListener('noteflow:add-folder', onAddFolderEvent);
+
+    return () => {
+      window.removeEventListener('noteflow:add-note', onAddNoteEvent);
+      window.removeEventListener('noteflow:add-folder', onAddFolderEvent);
+    };
+  }, [selectedFolderId]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -282,6 +294,9 @@ function NotesPage({ session, mousePos }) {
     }
   };
 
+  // Wrap handleCreateNote in useCallback or don't put it in dependency array if not using it there, 
+  // but since we are accessing selectedFolderId, we need latest closures. 
+  // Above we passed `[selectedFolderId]` to useEffect so the event listener always has the latest selection.
   const handleCreateNote = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
