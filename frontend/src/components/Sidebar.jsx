@@ -217,9 +217,9 @@ function Sidebar({ isCollapsed, toggleSidebar, mousePos }) {
           <div className="relative z-10 w-20 h-20 bg-white/10 border border-white/20 mx-auto mb-4 rounded-full flex items-center justify-center shadow-inner group-hover:bg-white/20 transition-colors">
             <span className="text-xl">🚀</span>
           </div>
-          <button className="relative z-10 w-full bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl shadow-[0_0_15px_-3px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition-colors text-sm tracking-wide">
+          <Link to="/pro" className="block relative z-10 w-full bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-xl shadow-[0_0_15px_-3px_rgba(16,185,129,0.4)] hover:bg-emerald-400 transition-colors text-sm tracking-wide text-center">
             Upgrade Pro
-          </button>
+          </Link>
         </div>
       )}
 

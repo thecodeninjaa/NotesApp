@@ -62,6 +62,7 @@ function App() {
               <Route path="/calendar" element={isLoggedIn ? <ComingSoonPage title="Calendar" /> : <Navigate to="/login" replace />} />
               <Route path="/archive" element={isLoggedIn ? <ComingSoonPage title="Archive" /> : <Navigate to="/login" replace />} />
               <Route path="/trash" element={isLoggedIn ? <ComingSoonPage title="Trash" /> : <Navigate to="/login" replace />} />
+              <Route path="/pro" element={isLoggedIn ? <ComingSoonPage title="Pro Plan" /> : <Navigate to="/login" replace />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </div>
